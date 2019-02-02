@@ -1,0 +1,51 @@
+一. 命名规范
+1.目录命名：英文命名，全部采用小写方式， 以下划线分隔，不得超过两个单词的分割。
+  例：'data_models' is ok, 'data_source_moudles' is not ok
+  Js文件，css文件，HTML文件命名参照目录命名
+
+2.模块目录下文件命名(*:htm,html,ftl,css,js)：
+  模块列表管理界面：manage.*, 模块表单（编辑和添加）：form.*
+  关联列表管理界面：/relation/_manage.*, 关联表单（编辑和添加）: /relation/_form.*
+
+3.遵循 http://alloyteam.github.io/CodeGuide/ 开发规范
+
+
+二、本项目内容
+1.任务开发界面基于bootstrap栅格布局，基于Jquery脚本开发，数据装载使用freemark
+注意事项：jquery统一入口函数书写方式如下
+$(function(){
+	//coding
+});
+2.组件使用
+1)表单复选框，单选框使用iCheck插件(css/plugins/iCheck,js/plugins/iCheck)
+注意事项：在使用该插件的页面，需要在调用插件js之后进行如下配置：
+$(function(){
+	//在页面初始化后配置
+    $('.i-checks').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+    });
+});
+2)表单验证使用jquery.validate插件（js/plugins/validate）
+注意事项：需要在页面上同时导入如下三个js文件
+<script src="../../js/plugins/validate/jquery.validate.min.js"></script>
+<script src="../../js/plugins/validate/messages_zh.min.js"></script>
+<script src="../../js/plugins/validate/compatible_bootstrap.js"></script>
+请注意“compatible_bootstrap.js”是validate兼容bootstrap的配置js,没有直接写在插件中是为了便于插件升级
+3)数据列表使用footable插件（css/plugins/footable,js/plugins/footable)
+4)弹窗使用layer插件（css/plugins/layer,js/plugins/layer)
+注意事项：弹窗皮肤使用的是layer/skin/moon主题
+主要使用弹窗提示和toast提示
+5)日期使用daterange插件
+6)分页使用laypage插件
+7)文件上传使用dropzonejs
+8)树形视图使用ztree dtree
+
+3.其它约束
+1)页面图标使用font-awesome和iconfont字体 图标
+2)一个页面存在多个图片，要有相册效果;单个图片要有查看大图的功能
+3)每个项目必须包含404页面和500页面。封装ajax访问超时提示连接错误
+4)表单文本使用右对齐，不要冒号
+5)表单使用alt+enter提交
+6)页面禁止右键
+7)动画效果使用淡入淡出

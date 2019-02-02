@@ -1,0 +1,13 @@
+
+.input-group .search {
+	width: 0;
+}
+
+.operation a {
+	display: inline-block;
+	margin-right: 10px;
+}
+.input-group .search .btn{
+	border-radius: 3px;
+}
+

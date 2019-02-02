@@ -1,0 +1,113 @@
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>设备信息-<#if device??>修改<#else>添加</#if></h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+               		 <form method="get" class="form-horizontal" id="deviceForm">
+               		 	<input type="hidden" name="id" value="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">设备编号</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="deviceNumber" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">工控机编号</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="ipcId" value="" onclick="choseAIpc(this, 'dformIpc')" readonly>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">模型</label>
+                            <div class="col-sm-10">
+								<select class="form-control" name="model">
+									<option vlaue="printer">printer</option>
+									<option value="scanner">scanner</option>
+									<option value="hiter">hiter</option>
+								</select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">连接串/sn/IP</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="connectionString" value="">
+                            </div>
+                        </div>
+	                    
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存内容</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	<#if device??>
+	$('#deviceForm input[name="id"]').val('${device.id!""}');
+	$('#deviceForm input[name="deviceNumber"]').val('${device.deviceNumber!""}');
+	$('#deviceForm input[name="ipcId"]').val('${device.ipcId!""}');
+	$('#deviceForm input[name="ipcId"]').attr('data-id', '${device.ipcId!""}');
+	$('#deviceForm input[name="model"]').val('${device.model}!""');
+	$('#deviceForm input[name="connectionString"]').val('${device.connectionString!""}');
+	</#if>
+	
+	$("#deviceForm").validate({
+        rules: {
+        	deviceNumber: {
+                required: true,
+                rangelength: [1,50]
+            },
+            ipcId: {
+                required: true
+            },
+            model: {
+                required: true
+            },
+            connectionString: {
+                required: true,
+                rangelength: [1,100]
+            }
+        },
+        messages: {
+        	deviceNumber: {
+                required: icon + "请输入设备编号",
+                rangelength: icon + "设备编号输入长度必须介于1和50之间"
+            },
+            ipcId: {
+                required: icon + "请选择工控机编号"
+            },
+            model: {
+                required: icon + "请选择模型"
+            },
+            connectionString: {
+                required: icon + "请输入连接串/sn/IP",
+                rangelength: icon + "连接串/sn/IP输入长度必须介于1和100之间"
+            }
+        },
+        submitHandler:function(form){
+        	var submitObj = $("#deviceForm").serializeObject(),
+        		params = {
+        			jsonStr: JSON.stringify(submitObj)
+        		};
+        	
+        	save(params, 'device');
+        } 
+	});
+</script>

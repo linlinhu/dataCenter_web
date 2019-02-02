@@ -1,0 +1,94 @@
+<#setting datetime_format='yyyy-MM-dd HH:mm:ss'>
+<#setting date_format='yyyy-MM-dd'>
+<div class="wrapper-content">
+	<div class="row">
+		<div class="col-sm-12">
+		    <div class="ibox float-e-margins">
+		        <div class="ibox-title">
+		            <h5>产品码规则</h5>
+		            <div class="ibox-tools">
+		                <a class="btn btn-primary" href="javascript:goPage('form')" alt="添加二维码" title="添加二维码">
+		                    <i class="fa fa-plus"></i>
+		                </a>
+		            </div>
+		        </div>
+		        <div class="ibox-content">
+		            <table class="footable table table-stripped toggle-arrow-tiny" id="drTable" data-paging="false">
+		                <thead>
+		                        <tr>
+		                            <th data-toggle="true">编号</th>
+		                            <th>名称</th>
+		                            <th>正则表达式</th>
+		                            <th data-sort-ignore="true">操作</th>
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                    	<#if codes?? && codes?size gt 0>
+		                    	<#list codes as c>
+		                    	<tr>
+		                        	<td>${c.code!""}</td>
+		                        	<td>${c.name!""}</td>
+		                        	<td>${c.pattern?replace('<','&lt;')}</td>
+		                        	<td>
+		                        		<!-- <a href="javascript: goPage('form?id=${c.id}')"><i class="fa fa-pencil text-navy"></i>编辑</a>
+	                                   	 -->
+	                                   	&nbsp;
+	                                    <#if c.status == 2>
+	                                    <a href="javascript: dealRule('${c.code}',2);" alt="终止" title="终止">
+	                                    	<i class="fa fa-pause text-navy"></i>
+	                                    </a>
+	                                    </#if>
+	                                    <#if c.status == 1>
+	                                    <a href="javascript: dealRule('${c.code}',1);" alt="发布" title="发布">
+	                                    	<i class="fa fa-play text-navy"></i>
+	                                    </a>
+	                                    </#if>
+	                                    
+		                        	</td>
+		                        </tr>
+		                        </#list>
+		                        <#else>
+		                      	<tr>
+		                      		<td colspan="4">暂无数据</td>
+		                      	</tr>  
+		                        </#if>
+		                        
+		                    </tbody>
+		            </table>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+<script>
+	function dealRule(code, type) {
+		var flag = type == 1 ? '发布' : '取消';
+		
+		layer.confirm('确认' + flag + '吗', {
+	      icon: 3,
+	      btn: ['确认','取消'] //按钮
+	    }, function(){
+	    	loading = layer.load();
+	    	$.ajax({
+	        	url: '${base}codingCenter/' + (type == 1 ? 'publishRule' : 'cancelRule'),
+	        	data: {
+	        		codeOrId: code
+	        	},
+	        	type:"post",
+	        	success:function(data){
+	        		layer.close(loading);
+	        		if (!data.success){
+	        			layer.msg(data.message ? data.message : flag + '失败！', {icon: 5});
+	        		} else {
+	        			layer.msg(flag + '成功！', {icon: 6});
+	        			goPage('index');
+	        		}
+	        	}
+	        });
+	    },function(){
+			layer.close(loading);
+	    });
+	}
+</script>
+
+

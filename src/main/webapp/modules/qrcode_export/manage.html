@@ -1,0 +1,97 @@
+<#setting datetime_format='yyyy-MM-dd HH:mm:ss'>
+<#setting date_format='yyyy-MM-dd'>
+<div class="wrapper-content">
+	<div class="row">
+		<div class="col-sm-12">
+		    <div class="ibox float-e-margins">
+		        <div class="ibox-title">
+		            <h5>二维码导出</h5>
+		            <!-- <div class="ibox-tools">
+		                <a class="btn btn-primary" href="javascript:goPage('form')">
+		                    <i class="fa fa-plus"></i>
+		                </a>
+		            </div> -->
+		        </div>
+		        <div class="ibox-content">
+					<div class="filter-line">
+	                	<form method="get" class="dr-search-form" id="codeExportSearchForm">
+							<input type="hidden" name="page">
+							<input type="hidden" name="chosenProductCode">
+                            <input placeholder="产品、生产线、车间查询" class="form-control" type="text" name="keyword" value="${keyword!''}" role="user-params">
+                            <button type="button" class="btn btn-primary" role="submit"><i class="fa fa-search"></i></button>
+                            <button type="button" class="btn btn-default" role="reset"><i class="fa fa-refresh"></i></button>
+	                 	</form>
+	                </div>
+		            <table class="footable table table-stripped toggle-arrow-tiny" id="codeExportTable" data-paging="false">
+		                <thead>
+		                        <tr>
+		                            <th data-toggle="true">批次编号</th>
+		                            <th>预计生产数量</th>
+		                            <th>产品</th>
+		                            <th>生产线</th>
+		                            <th>车间</th>
+		                            <th>状态</th>
+		                            <th>创建时间</th>
+		                            <th data-sort-ignore="true">操作</th>
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                    	<#if batchs?? &&  batchs.totalCount gt 0 >
+		                    	<#list batchs.resultList as d>
+		                    	<tr>
+		                        	<td>${d.code!"-"}</td>
+		                        	<td>${d.productCount!"-"}</td>
+		                        	<td>${d.product.productName!"-"}</td>
+		                        	<td>${d.productionLine.name!"-"}</td>
+		                        	<td>${d.shop.shopName!"-"}</td>
+		                        	<td>
+		                        	<#switch d.batchState>
+										<#case 1>
+									  		草稿
+									  	<#break>
+									  	<#case 2>
+											已发布
+									    <#break>
+									  	<#case 3>
+									     	打印中
+									    <#break>
+									  	<#case 4>
+									     	已打印
+									    <#break>
+									  	<#default>
+									    	-
+									</#switch>
+		                        	</td>
+		                        	<td>${d.createTime?number_to_date}</td>
+		                        	<td>
+		                        		<#if d.batchState != 1>
+		                        			
+		                            		<!-- <a href="javascript:goPage('form?id=${d.id}', 'batch');"><i class="fa fa-pencil text-navy">&nbsp;编辑</i></a>&nbsp;
+	                                    	<a href="javascript:remove('${d.id}', 'batch');"><i class="fa fa-trash text-navy">&nbsp;</i></a>&nbsp; -->
+	                                    	<a onclick="choseAProductCode(this, 'pChoseProducCode', 'codeExportTable','${d.product.id}', '${d.id}', '${d.productCount}')" alt="查看产品码" title="查看产品码"><i class="fa fa-search-plus text-navy">&nbsp;</i></a>&nbsp;
+		                        		</#if>
+		                        	</td>
+		                    	</tr>
+		                        </#list>
+		                        <#else>
+		                        <tr>
+		                        	<td colspan="7">暂无数据</td>
+		                        </tr>
+		                        </#if>
+		                        
+		                        
+		                    </tbody>
+		            </table>
+		            <div class="text-right" id="codeExportPage"></div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+
+<script>
+var totalPage = '${batchs.totalPageNum!1}',
+	curr = '${cur!1}';
+	
+initTable('codeExport', totalPage, curr);
+</script>

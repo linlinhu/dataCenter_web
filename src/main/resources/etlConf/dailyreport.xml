@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<etlmain>
+    <etltable schema="oa" name="daily_report">
+        <etlcolumns>
+            
+            <etlcolumn type="STRING" token="account" name="account" propertyName="account"/>
+           
+            <etlcolumn type="STRING" token="email" name="email" propertyName="email"/>
+            
+            <etlcolumn type="STRING" token="rbzt" name="subject" propertyName="subject"/>
+            
+            <etlcolumn type="STRING" token="jrwc_" name="todayfinish" propertyName="todayFinish"/>
+             
+            <etlcolumn type="STRING" token="wtyfs" name="thinking" propertyName="thinking"/>
+            
+            <etlcolumn type="STRING" token="mrjh" name="plan" propertyName="plan"/>
+        
+        </etlcolumns>
+    </etltable>
+</etlmain>

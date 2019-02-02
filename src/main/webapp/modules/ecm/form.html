@@ -1,0 +1,185 @@
+<#setting date_format='yyyy-MM-dd'>
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5><#if ecm??>编辑<#else>添加</#if>企业信息</h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index?flag=1')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+               		 <form method="get" class="form-horizontal" id="ecmForm">
+						<input type="hidden" name="id">
+						<input type="hidden" name="ecmId">
+						<input type="hidden" name="logo">
+						<input type="hidden" name="activeStatus">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">企业名称</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="name" value="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">企业简称</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="abbreviation" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">
+                            	<#if ecm?? && ecm.sn?? && ecm.sn?length gt 0>
+                            	三证合一代码<br><font color="green">(已设置，无法编辑)</font>
+                            	<#else>
+                            	三证合一代码<br><font color="red">(非常重要，只能设置一次)</font>
+                            	</#if>
+                            </label>
+                            <div class="col-sm-10">
+                            	<#if ecm?? && ecm.sn?? && ecm.sn?length gt 0>
+                            		<input type="hidden" name="sn" value="${ecm.sn}">
+                            		<span class="form-control">${ecm.sn}</span>
+                            	<#else>
+									<input class="form-control" type="text" name="sn" value="">
+                            	</#if>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                             <label class="col-sm-2 control-label">所属行业</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="industry" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <!-- 
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">企业图标</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="logo" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div> 
+                        -->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">企业规模(人)</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" name="scale">
+                                	<option value="">-- 请选择 --</option>
+                                	<option value="1000人以上">1000人以上</option>
+                                	<option value="300-1000人">300-1000人</option>
+                                	<option value="20-300人">20-300人</option>
+                                	<option value="20人以下">20人以下</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">企业地址</label>
+                            <div class="col-sm-10">
+								<textarea class="form-control" rows="2" name="address"></textarea>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">企业描述</label>
+                            <div class="col-sm-10">
+								<textarea class="form-control" rows="6" name="describe"></textarea>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存内容</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+				
+<script>
+	<#if ecm??>
+		$('#ecmForm input[name = "id"]').val('${ecm.id!""}');
+		$('#ecmForm input[name = "ecmId"]').val('${ecm.ecmId!""}');
+		$('#ecmForm input[name = "logo"]').val('${ecm.logo!""}');
+		$('#ecmForm input[name = "activeStatus"]').val('${ecm.activeStatus!""}');
+		$('#ecmForm input[name = "name"]').val('${ecm.name!""}');
+		$('#ecmForm input[name = "abbreviation"]').val('${ecm.abbreviation!""}');
+		
+		$('#ecmForm input[name = "industry"]').val('${ecm.industry!""}');
+		$('#ecmForm select[name = "scale"]').val('${ecm.scale!""}');
+		$('#ecmForm textarea[name = "address"]').val('${ecm.address!""}');
+		$('#ecmForm textarea[name = "describe"]').val('${ecm.describe!""}');
+	</#if>
+	$("#ecmForm").validate({
+        rules: {
+        	name: {
+                required: true,
+                rangelength: [2,30],
+                isContainsSpecialChar: true
+            },
+            abbreviation: {
+                rangelength: [2,20],
+                isContainsSpecialChar: true
+            },
+            sn: {
+                required: true,
+                rangelength: [15,20],
+                isRightfulString: true
+            },
+            industry: {
+                required: true
+            },
+            scale: {
+            	required: true
+            },
+            address: {
+                rangelength: [1,50]
+            },
+            describe: {
+                rangelength: [1,200]
+            }
+        },
+        messages: {
+        	name: {
+                required: icon + "请输入企业名称",
+                rangelength: icon + "企业名称输入长度限制为2-30个合法字符"
+            },
+            abbreviation: {
+                rangelength: icon + "企业简称输入长度限制为2-20个合法字符"
+            },
+            sn: {
+                required: icon + "请输入主体编号",
+                rangelength: icon + "主体编号输入长度限制为15-20个合法字符"
+            },
+            industry: {
+                required: icon + "请选择行业"
+            },
+            scale: {
+            	 required: icon + "请选择企业规模"
+            },
+            address: {
+            	rangelength: icon + "企业地址输入长度限制为1-50个合法字符"
+            },
+            describe: {
+            	rangelength: icon + "企业描述输入长度限制为1-200个合法字符"
+            }
+        },
+        submitHandler:function(form){
+        	var submitObj = $("#ecmForm").serializeObject(),
+        		params = {};
+        	
+        	save(submitObj, 'ecm');
+        } 
+	});
+	
+	
+	
+	
+</script>

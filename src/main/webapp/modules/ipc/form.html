@@ -1,0 +1,176 @@
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>
+                    	工控机信息-
+                    <#if ipc??>
+                    	编辑
+                    <#else>
+                    	添加
+                    </#if>
+                    </h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+               		 <form method="get" class="form-horizontal" id="ipcForm">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">工控机编号</label>
+                            <div class="col-sm-10">
+                            	<#if ipc??>
+			                    	<input class="form-control" type="hidden" name="createTime" value="${ipc.createTime!''}">
+			                    	<input class="form-control" type="text" name="seriesNumber" value="${ipc.seriesNumber!''}" readOnly>
+			                    <#else>
+			                    	<input class="form-control" type="text" name="seriesNumber" >
+			                    </#if>
+			                    <input class="form-control" type="hidden" name="id">
+			                    <input class="form-control" type="hidden" name="level" value="0">
+								
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">所属生产线</label>
+                            <div class="col-sm-10">
+								<script id = "ipcTpl" type="text/html">
+								<#if ipc??>
+								<#if ipc.productionLine??>
+								{{#  layui.each(d.data, function(index, item){ if(item.id == ${ipc.productionLine.id}){ }}
+ 										<option value="{{item.id}}" selected=''>{{item.name}}&nbsp;&nbsp;{{item.lineNumber}}</option>
+									{{#  } else { }}
+  										<option value="{{item.id}}">{{item.name}}&nbsp;&nbsp;{{item.lineNumber}}</option>
+									{{#  } }}
+								{{#  }); }}
+								<#else>
+								<option value =''>暂无</option>
+									{{#  layui.each(d.data, function(index, item){ }}
+  										<option value="{{item.id}}">{{item.name}}&nbsp;&nbsp;{{item.lineNumber}}</option>
+									{{#  }); }}
+								</#if>
+								<#else>
+                    				{{#  layui.each(d.data, function(index, item){ }}
+  										<option value="{{item.id}}">{{item.name}}&nbsp;&nbsp;{{item.lineNumber}}</option>
+									{{#  }); }}
+                    			</#if>
+								</script>
+								<select class="form-control" id="ipcTplView" name="productionLine">
+                            	</select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">mac地址</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="macAddr">
+                            </div> 
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">IP地址</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="ipAddr">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存内容</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	<#if  ipc??>
+		$('#ipcForm input[name="id"]').val('${ipc.id!""}');
+		$('#ipcForm input[name="macAddr"]').val('${ipc.macAddr!""}');
+		$('#ipcForm input[name="ipAddr"]').val('${ipc.ipAddr!""}');
+	</#if>
+	var icon = "<i class='fa fa-times-circle'></i> ",
+		loading = null;
+	$('.i-checks').iCheck({
+	    checkboxClass: 'icheckbox_square-green',
+	    radioClass: 'iradio_square-green',
+	});
+	ajax ();
+	function ajax (){
+		$.ajax({ 
+			url:'ipc/findAllPline', 
+			type:'get',
+			success: function(res, error){
+				if(res.success){
+					var getTpl = ipcTpl.innerHTML,
+					 	view = document.getElementById('ipcTplView');
+					if(res.data.length>0){
+						laytpl(getTpl).render(res, function(html){
+							view.innerHTML = html;
+						}); 
+					} else{
+						view.innerHTML = '<option value="">暂无</optio>'
+					}
+					
+				} else {
+					layer.msg(res.message ? res.message : '生产线数据获取失败！', {icon: 5});
+				}
+	        }
+		});
+	}
+	
+	
+	$("#ipcForm").validate({
+        rules: {
+        	seriesNumber: {
+                required: true,
+                rangelength: [1,50]
+            },
+            productionLine: {
+            	required: true,
+                rangelength: [1,50]
+            },
+            macAddr: {
+                required: true,
+                rangelength: [1,50]
+            },
+            ipAddr: {
+                required: true,
+                rangelength: [1,50]
+            }
+        },
+        messages: {
+        	seriesNumber: {
+                required: icon + "请输入工控机编号",
+                rangelength: icon + "工控机编号输入长度必须介于1和50之间"
+            },
+            productionLine: {
+            	required: icon + "请选择生产线",
+                rangelength: icon + "生产线不能为空"
+            },
+            model: {
+                required: icon + "请输入mac地址",
+                rangelength: icon + "mac地址输入长度必须介于1和20之间"
+            },
+            connectionString: {
+                required: icon + "请输入IP地址",
+                rangelength: icon + "IP地址输入长度必须介于1和100之间"
+            }
+        },
+        submitHandler: function(){
+        	var submitObj = $('#ipcForm').serializeObject(),
+            	data={};
+	        submitObj.productionLine = {id:submitObj.productionLine};
+	       //console.log(submitObj);
+	        data = {
+	                jsonStr: JSON.stringify(submitObj)
+	        };
+        	save(data, 'ipc')
+        }
+	});
+</script>

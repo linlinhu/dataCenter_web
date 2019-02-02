@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:redis="http://www.springframework.org/schema/redis"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
+http://www.springframework.org/schema/context 
+http://www.springframework.org/schema/context/spring-context-4.0.xsd 
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx-4.0.xsd 
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+http://code.alibabatech.com/schema/dubbo       
+http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+http://www.springframework.org/schema/redis  
+http://www.springframework.org/schema/redis/spring-redis-1.0.xsd
+http://www.springframework.org/schema/jdbc 
+http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
+">
+	<bean id="springContextHolder" class="com.emin.base.util.SpringContextHolder"></bean>
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	<aop:config proxy-target-class="false"></aop:config>
+	<bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+	<!--
+	<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">  
+        <property name="sessionFactory" ref="sessionFactory" />  
+    </bean> -->
+   <!--  <mvc:resources location="/workflow/" mapping="classpath:/workflow/**"/> 
+    <mvc:resources location="/css/" mapping="classpath:/css/**"/> 
+    <mvc:resources location="/fonts/" mapping="classpath:/fonts/**"/>
+    <mvc:resources location="/img/" mapping="classpath:/img/**"/> 
+    <mvc:resources location="/js/" mapping="classpath:/js/**"/> 
+    <mvc:resources location="/moudles/" mapping="classpath:/moudles/**"/>  -->
+	<tx:annotation-driven transaction-manager="transactionManager" /> 
+    
+    
+	<bean id="mappingJacksonHttpMessageConverter"   
+        class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">   
+<!--         为了处理返回的JSON数据的编码，默认是ISO-88859-1的，这里把它设置为UTF-8,解决有乱码的情况    -->
+        <property name="supportedMediaTypes">    
+            <list>    
+                 <value>application/json; charset=UTF-8</value>
+				 <value>text/html; charset=UTF-8</value>
+				 <value>application/x-www-form-urlencoded; charset=UTF-8</value> 
+            </list>    
+        </property>    
+    </bean> 
+  
+ 
+	<!-- 提供方应用名称信息，这个相当于起一个名字，我们dubbo管理页面比较清晰是哪个应用暴露出来的 -->
+	<dubbo:application name="platform-dataCenter-web" />
+	<!--<dubbo:registry address="zookeeper://192.168.0.222:2181"  /> zookeeper://10.172.94.83:2181-->
+    <dubbo:registry address="zookeeper://192.168.0.202:2181" />
+
+	<dubbo:consumer check="false"></dubbo:consumer><!-- 启动时不检查  -->
+	<!-- 扫描注解包路径，多个包用逗号分隔，不填pacakge表示扫描当前ApplicationContext中所有的类 -->
+	<dubbo:annotation />
+    <!--<dubbo:protocol name="dubbo" port="30103"></dubbo:protocol>-->
+    <!--<dubbo:provider accesslog="true"></dubbo:provider>-->
+</beans>

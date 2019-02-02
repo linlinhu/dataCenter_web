@@ -1,0 +1,40 @@
+[{
+	"key": "batch",
+	"value": "批次"	
+},{
+	"key": "coding_center",
+	"value": "二维码生成规则"	
+},{
+	"key": "device",
+	"value": "设备"	
+},{
+	"key": "ecm",
+	"value": "主体"	
+},{
+	"key": "print_plan",
+	"value": "打印方案"	
+},{
+	"key": "product",
+	"value": "产品"	
+},{
+	"key": "product_code",
+	"value": "产品码"	
+},{
+	"key": "production_line",
+	"value": "生产线"	
+},{
+	"key": "public_notice",
+	"value": "公告信息"	
+},{
+	"key": "qrcode_export",
+	"value": "二维码导出"	
+},{
+	"key": "shop",
+	"value": "车间"	
+},{
+	"key": "user",
+	"value": "用户"	
+},{
+	"key": "production_mode",
+	"value": "生产模式"	
+}]

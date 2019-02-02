@@ -1,0 +1,79 @@
+<#setting datetime_format='yyyy-MM-dd HH:mm:ss'>
+<#setting date_format='yyyy-MM-dd'>
+<div class="wrapper-content">
+	<div class="row">
+		<div class="col-sm-12">
+		    <div class="ibox float-e-margins">
+		        <div class="ibox-title">
+		            <h5>产品码管理</h5>
+		            <div class="ibox-tools">
+		                <!-- <a class="btn btn-primary" href="javascript:goPage('form')">
+		                    <i class="fa fa-plus"></i>
+		                </a> -->
+		            </div>
+		        </div>
+		        <div class="ibox-content">
+					<div class="filter-line">
+	                	<form method="get" class="dr-search-form" id="productCodeSearchForm">
+							<input type="hidden" name="page">
+                            <input placeholder="名称、产品查询" class="form-control" type="text" name="keyword" value="${keyword!''}" role="user-params">
+                            <button type="button" class="btn btn-primary" role="submit"><i class="fa fa-search"></i></button>
+                            <button type="button" class="btn btn-default" role="reset"><i class="fa fa-refresh"></i></button>
+	                 	</form>
+	                </div>
+		            <table class="footable table table-stripped toggle-arrow-tiny" id="productCodeTable" data-page-size="${limit!10}" data-paging="false">
+		                <thead>
+		                        <tr>
+		                            <th data-toggle="true">名称</th>
+		                            <th>类型</th>
+		                            <th>所属产品</th>
+		                            <th>产品码规则</th>
+		                            <th>创建时间</th>
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                    	<#if pcodes?? &&  pcodes.totalCount gt 0 >
+		                    	<#list pcodes.resultList as d>
+		                    	<tr>
+		                        	<td>${d.codeName}</td>
+		                        	<td>
+		                        		<#if d.codeType??>
+			                        		<#if d.codeType == 1>
+			                        		物联码
+			                        		<#else>
+			                        		物流码
+			                        		</#if>
+		                        		<#else>
+		                        		-
+		                        		</#if>
+		                        	</td>
+		                        	<td>${d.product.productName!"-"}</td>
+		                        	<td>${d.codeRuleId!"-"}</td>
+		                        	<td>${d.createTime?number_to_date}</td>
+		                        </tr>
+		                        </#list>
+		                        <#else>
+		                        <tr>
+		                        	<td colspan="7">暂无数据</td>
+		                        </tr>
+		                        </#if>
+		                        
+		                    </tbody>
+		            </table>
+		            <div class="text-right" id="productCodePage"></div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+<script>
+<#if pcodes??>
+initTable({
+	modelName: 'productCode',
+	curr: '${cur!1}',
+	totalPage: '${pcodes.totalPageNum!1}',
+	totalCount: '${pcodes.totalCount!1}',
+	limit: '${limit!10}'
+});
+</#if>
+</script>

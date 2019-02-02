@@ -1,0 +1,177 @@
+<#setting datetime_format='yyyy-MM-dd HH:mm:ss'>
+<#setting date_format='yyyy-MM-dd'>
+<style>
+#systemConfigDetail-view dl {
+	margin-bottom: 10px;
+}
+#systemConfigDetail-view dt,
+#systemConfigDetail-view dd {
+	line-height: 25px;
+}
+</style>
+<div class="wrapper-content">
+	<div class="row">
+		<div class="col-sm-12">
+		    <div class="ibox float-e-margins">
+		        <div class="ibox-title">
+		            <h5>系统配置</h5>
+		            <div class="ibox-tools">
+		                <a class="btn btn-primary" href="javascript:goPage('form')">
+		                    <i class="fa fa-plus"></i>
+		                </a>
+		            </div>
+		        </div>
+		        <div class="ibox-content" style="padding:0 15px;">
+		        	<div class="wrapper-content">
+		        	<div class="row">
+		        		<div class="col-xs-4">
+						<div class="zTreeDemoBackground systemConfigTreeBg hide">
+							<ul id="systemConfigTree" class="ztree"></ul>
+						</div>
+						</div>
+						<div class="col-xs-8">
+							<script id="systemConfigDetailData" type="text/html">
+								<div class="panel-heading">{{d.name}}-详情</div>
+
+							  	<div class="panel-body" >
+							    <dl class="dl-horizontal">
+								  <dt>名称：</dt>
+								  <dd>{{d.name}}</dd>
+								</dl>
+							    <dl class="dl-horizontal">
+								  <dt>配置值：</dt>
+								  <dd>{{d.value}}</dd>
+								</dl>
+							    <dl class="dl-horizontal">
+								  <dt>说明：</dt>
+								  <dd>{{d.explain}}</dd>
+								</dl>
+                                <dl class="dl-horizontal">
+								  <dt>系统配置：</dt>
+								  <dd>
+									{{# if(d.sys) { }}
+                                                                                                                                            是
+									{{# } else { }}
+                                                                                                                                             否
+									{{# } }}
+								</dl>
+								<dl class="dl-horizontal">
+								  <dt>创建时间：</dt>
+								  <dd>{{new Date(d.createTime).Format("yyyy-MM-dd hh:mm:ss")}}</dd>
+								</dl>
+								<dl class="dl-horizontal">
+								  <dt>上次编辑时间：</dt>
+								  <dd>{{new Date(d.lastModifyTime).Format("yyyy-MM-dd hh:mm:ss")}}</dd>
+									
+								</dl>
+								</div>
+							</script>
+							<div class="panel panel-default hide" style="min-height:400px" id="systemConfigDetail-view">
+							<div class="text-center" style="margin-top:50px;"><mark class="lead">点击节点查看详情</mark></div>
+							
+						</div>
+					</div>
+					</div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+<SCRIPT type="text/javascript">
+
+		var systemConfigSetting = {	
+			async: {
+				enable: true,
+				//url: '${base}category/tree',
+				url:'${base}systemConfig/loadAsyncSystemConfig',
+				autoParam: ["id", "name", "parentId"],
+				otherParam: {"ecmId":"1"},
+				dataFilter: filter	
+			}, 
+			view: {
+				addDiyDom: addDiyDom
+			},
+			data: {
+				simpleData: {
+					enable: true
+				}
+			},
+			checkable: true,
+			showIcon: true,
+			showLine: true,
+			callback: {
+				onClick: onClick,
+				asyncError: zTreeOnAsyncError,
+			}
+		};
+
+		var zNodes = [],
+			IDMark_Switch = "_switch",
+			IDMark_Icon = "_ico",
+			IDMark_Span = "_span",
+			IDMark_Input = "_input",
+			IDMark_Check = "_check",
+			IDMark_Edit = "_edit",
+			IDMark_Remove = "_remove",
+			IDMark_Ul = "_ul",
+			IDMark_A = "_a";
+		loading = layer.load();
+		$.ajax({
+			url:'${base}systemConfig/loadSystemConfig', 
+			/* url:"${base}category/tree", */
+			type: 'get',
+			success:function(result){
+				layer.close(loading);
+				if (result.success) {
+					console.log(result)
+					if (result.data.length > 0) {
+						$('#systemConfigDetail-view').removeClass('hide');
+						$('.systemConfigTreeBg').removeClass('hide');
+						$.fn.zTree.init($("#systemConfigTree"), systemConfigSetting, zNodes);
+
+						var zTree = $.fn.zTree.getZTreeObj("systemConfigTree");
+						zTree.expandAll(false);
+					} else {
+						layer.msg('配置信息为空，请先添加',{icon:5})
+					}
+					 
+				}else{
+					layer.msg(result.message?result.message:'获取数据失败',{icon:5})
+				}
+			}
+		});
+		
+		function onClick(event, treeId, treeNode, clickFlag) {
+			loading = layer.load();	
+			$.ajax({
+				url:'${base}systemConfig/findSystemConfigById?id=' + treeNode.id ,
+				type: 'get',
+				success:function(result){
+					layer.close(loading);
+					if (result.success) {
+						var systemConfigDetailTpl = systemConfigDetailData.innerHTML,//数据模板
+							systemConfigDetailView = document.getElementById('systemConfigDetail-view');//数据视图容器
+						laytpl(systemConfigDetailTpl).render(result.data, function(html){
+							systemConfigDetailView.innerHTML = html;
+						});
+					}else{
+						layer.msg(result.message?result.message:'获取详情数据失败',{icon:5})
+					}
+				}
+			});
+			
+		}	
+		
+		function addDiyDom(treeId, treeNode){
+			var aObj = $("#" + treeNode.tId + IDMark_A);
+			var editStr = '<a href="javascript: goPage(\'form?parentId=' + treeNode.id + '\')" style="margin:0 0 0 5px;" alt="添加子线" title="添加子线"><i class="fa fa-plus"></i></a>' +
+						'<a href="javascript: goPage(\'form?id=' + treeNode.id + '\')" style="margin:0 0 0 5px;" alt="编辑" title="编辑"><i class="fa fa-pencil"></i></a>' +
+						'<a href="javascript: remove(\'' + treeNode.id + '\',\'systemConfig\')" style="margin:0 0 0 5px;" alt="删除" title="删除"><i class="fa fa-trash"></i></a>';
+			aObj.append(editStr);
+		}
+		
+		function zTreeOnAsyncError(event, treeId, treeNode){    
+            layer.alert("加载数据失败!",{icon:5});    
+        } 
+		
+	</SCRIPT>

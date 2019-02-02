@@ -1,0 +1,104 @@
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>配置信息-<#if config??>编辑<#else>添加</#if></h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+               		 <form method="get" class="form-horizontal" id="systemConfigForm">
+               		 	<#if config??>
+               		 	<input type="hidden" name="id" value="${config.id!''}">
+               		 	<input type="hidden" name="sys" value="<#if config.sys>true<#else>false</#if>">
+               		 	</#if>
+               		 	<input type="hidden" name="parentId" value="${parentId!''}">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">名称</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="name">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">配置值</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="value">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">说明</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="explain">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存内容</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	<#if config??>
+		$('#systemConfigForm input[name="name"]').val('${config.name!""}');
+		$('#systemConfigForm input[name="value"]').val('${config.value!""}');
+		$('#systemConfigForm input[name="explain"]').val('${config.explain!""}');
+	</#if>
+	$('.i-checks').iCheck({
+	    checkboxClass: 'icheckbox_square-green',
+	    radioClass: 'iradio_square-green',
+	});
+	
+	
+	$("#systemConfigForm").validate({
+        rules: {
+            name: {
+                required: true,
+                isRightfulString: true,
+                rangelength: [1,20]
+            },
+            value: {
+                required: true,
+                rangelength: [1,100]
+            },
+            explain:{
+                required: true,
+                rangelength: [1,100]
+            }
+        },
+        messages: {
+            name: {
+                required: icon + "请输入名称",
+                isRightfulString:icon + "配置名称只能由字母、数字、下划线组成",
+                rangelength: icon + "名称输入长度必须介于1和20之间"
+            },
+            value: {
+                required: icon + "请输入设置值",
+                rangelength: icon + "入设置值输入长度必须介于1和100之间"
+            },
+            explain: {
+                required: icon + "请输入说明信息",
+                rangelength: icon + "说明信息输入长度必须介于1和100之间"
+            }
+        },
+        submitHandler:function(form){
+        	var submitObj = $("#systemConfigForm").serializeObject();
+        	
+    		console.log(submitObj)
+        	save(submitObj, 'systemConfig')
+        } 
+	});
+	
+</script>

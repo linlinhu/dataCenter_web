@@ -1,0 +1,87 @@
+<#setting datetime_format='yyyy-MM-dd HH:mm:ss'>
+<#setting date_format='yyyy-MM-dd'>
+<div class="wrapper-content">
+	<div class="row">
+		<div class="col-sm-12">
+		    <div class="ibox float-e-margins">
+		        <div class="ibox-title">
+		            <h5>设备管理</h5>
+		            <div class="ibox-tools">
+		                <!-- <a class="btn btn-primary" href="javascript:goPage('form')">
+		                    <i class="fa fa-plus"></i>
+		                </a> -->
+		            </div>
+		        </div>
+		        <div class="ibox-content">
+					<div class="filter-line">
+	                	<form method="get" class="dr-search-form" id="deviceSearchForm">
+							<input type="hidden" name="page">
+                            <input placeholder="设备编号、连接串、类型查询" class="form-control" type="text" name="keyword" value="${keyword!''}" role="user-params">
+                            <button type="button" class="btn btn-primary" role="submit"><i class="fa fa-search"></i></button>
+                            <button type="button" class="btn btn-default" role="reset"><i class="fa fa-refresh"></i></button>
+	                 	</form>
+	                </div>
+		            <table class="footable table table-stripped toggle-arrow-tiny" id="deviceTable" data-page-size="${limit!10}" data-paging="false">
+		                <thead>
+		                        <tr>
+		                            <th data-toggle="true">设备编号</th>
+		                            <th>模型</th>
+		                            <th>连接串/sn/IP</th>
+		                            <th>工控机ID</th>
+		                            <th>类型</th>
+		                            <th data-hide="all">其它信息</th>
+		                            <th>创建时间</th>
+		                           <!--  <th>操作</th> -->
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                    	<#if devices?? &&  devices.totalCount gt 0 >
+		                    	<#list devices.resultList as d>
+		                    	<tr>
+		                        	<td>${d.deviceNumber!'-'}</td>
+		                        	<td>${d.model!'-'}</td>
+		                        	<td>${d.connectionString!'-'}</td>
+		                        	<td>${d.ipcId!'-'}</td>
+		                        	<td>${d.deviceStatusCode!'-'}</td>
+		                        	<td>
+		                        		<#if d.otherInfo??>
+		                        		<#list d.otherInfo?keys as testKey>
+											${d.otherInfo.get(testKey)}     
+										</#list>
+										<#else>
+										-
+										</#if>
+		                        	</td>
+		                        	<td>${d.createTime?number_to_date!'-'}</td>
+		                        	<!-- <td>
+		                        		<a href="javascript: goPage('form',{id:${d.id}})"><i class="fa fa-pencil text-navy">&nbsp;</i></a>
+	                                    <a href="javascript: remove('${d.id}', 'device');"><i class="fa fa-trash text-navy">&nbsp;</i></a>
+		                        	</td> -->
+		                        </tr>
+		                        </#list>
+		                        <#else>
+		                        <tr>
+		                        	<td colspan="7">暂无数据</td>
+		                        </tr>
+		                        </#if>
+		                        
+		                    </tbody>
+		            </table>
+		            <div class="text-right" id="devicePage"></div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+<script>
+<#if devices??>
+initTable({
+	modelName: 'device',
+	curr: '${cur!1}',
+	totalPage: '${devices.totalPageNum!1}',
+	totalCount: '${devices.totalCount!1}',
+	limit: '${limit!10}'
+});
+</#if>
+
+</script>

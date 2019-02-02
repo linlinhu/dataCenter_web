@@ -1,0 +1,10 @@
+#addTemplateBtn {
+    width: 100%;
+    height: 120px;
+    border-radius: 10px;
+    line-height: 120px;
+    background: #e7eaec;
+    
+    font-size: 42px;
+    text-align: center;
+}

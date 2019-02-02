@@ -1,0 +1,138 @@
+<style>
+.ecm_info {
+	position: relative;
+	line-height: 35px;
+}
+.trade_mark_row {
+	position: absolute;
+	top: 40px;
+	right: 15px;
+	width: 30%;
+	text-align: center;
+}
+.ecm_info .col-sm-2 {
+	font-weight: bold;
+}
+</style>
+<div class="wrapper-content">
+	<div class="row">
+		<div class="col-sm-12">
+		    <div class="ibox float-e-margins">
+		        <div class="ibox-title">
+		            <h5>企业信息</h5>
+		            <div class="ibox-tools">
+		        		<#if ecm?? && user.acount == 'admin'>
+		        		<a class="btn btn-primary" href="javascript:goPage('form?id=${ecm.id}')" alt="编辑" title="编辑">
+		                    <i class="fa fa-pencil"></i>
+		                </a>
+		                <a class="btn btn-primary" href="javascript:synEcm('${ecm.sn}')" alt="同步" title="同步">
+		                    <i class="fa fa-refresh"></i>
+		                </a>
+		                </#if>
+		            </div>
+		        </div>
+		        <div class="ibox-content ecm_info">
+		        	<#if ecm??>
+		        	<#if ecm.logo??>
+					<div class="trade_mark_row">
+						<img height="180" width="180" src="${ecm.logo}" onerror="this.src='${base}img/nopic.png'">
+		            </div>
+		            </#if>
+		        	<#if ecm.name??>
+		            <div class="row">
+		                <div class="col-sm-12 h3">${ecm.name}</div>
+		            </div>
+		            </#if>
+		            <#if ecm.abbreviation??>
+					<div class="row">
+				        <div class="col-sm-2">公司简称</div>
+				        <div class="col-sm-10">${ecm.abbreviation}</div>
+				    </div>
+		            </#if>
+		        	<#if ecm.sn??>
+					<div class="row">
+		                <div class="col-sm-2 control-label">三证合一代码</div>
+		                <div class="col-sm-10">${ecm.sn}</div>
+		            </div>
+		            </#if>
+		        	<#if ecm.scale??>
+					<div class="row">
+		                <div class="col-sm-2">规模</div>
+		                <div class="col-sm-10">${ecm.scale}</div>
+		            </div>
+		            </#if>
+		        	<#if ecm.registerAmount??>
+					<div class="row">
+		                <div class="col-sm-2">用户数</div>
+		                <div class="col-sm-10">${ecm.registerAmount}人</div>
+		            </div>
+		            </#if>
+		        	<#if ecm.industry??>
+					<div class="row">
+		                <div class="col-sm-2">所属行业</div>
+		                <div class="col-sm-10">${ecm.industry}</div>
+		            </div>
+		            </#if>
+		        	<#if ecm.address??>
+					<div class="row">
+		                <div class="col-sm-2">公司地址</div>
+		                <div class="col-sm-10">${ecm.address}</div>
+		            </div>
+		            </#if>
+		        	<#if ecm.describe??>
+					<div class="row">
+				        <div class="col-sm-2">公司描述</div>
+				        <div class="col-sm-10">${ecm.describe}</div>
+				    </div>
+		            </#if>
+				    <#else>
+					    <#if user.acount == 'admin' >
+					    	<div id="ecmCreateOrSycn"></div>
+					    <#else>
+					   		 企业信息暂无
+					    </#if>
+				    </#if>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+
+<script>
+<#if !ecm?? && user.acount == 'admin'>
+ecmStepWindowId = null
+$('#ecmCreateOrSycn').html($('#ecmCreateOrSycnSTEP').html());
+ecmStepValidateInit('#ecmCreateOrSycn');
+</#if>
+function synEcm(companyCode) {
+	synData({companyCode: companyCode},'ecm');
+}
+
+/* function sycnEcm(companyCode) {
+	layer.confirm('是否确认同步', {
+      icon: 2,
+      btn: ['确认','取消'] //按钮
+    }, function(){
+    	loading = layer.load();
+    	$.ajax({
+        	url: 'ecm/sycnEcm',
+        	data: {
+        		companyCode: companyCode
+        	},
+        	type:"post",
+        	success:function(data){
+        		layer.close(loading);
+        		if (!data.success){
+        			layer.msg(data.message ? data.message : '同步失败！', {icon: 5});
+        		} else {
+        			layer.msg('同步成功！', {icon: 6});
+        			goPage('index');
+        		}
+        	}
+        });
+    },function(){
+		layer.close(loading);
+    });
+} */
+</script>
+

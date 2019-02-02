@@ -1,0 +1,51 @@
+
+.daily .ibox-title {
+	position:relative;
+}
+.daily .ibox-title h5 {
+	position: absolute;
+	left: 20px;
+	z-index: 2;
+}
+
+.daily .accounts {
+	overflow: hidden;
+}
+.daily .ibox-tools {
+	width: 100px;
+	height: 14px;
+	overflow: hidden;
+}
+.daily .ibox-tools input {
+	margin: 0;
+	margin-top: -8px;
+	border: 0;
+	cursor: pointer;
+	width: 264px;
+	text-align: right;
+	padding: 0;
+	padding-right: 20px;
+	height: 14px;
+	font-size: 14px;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0,0,0,0);
+}
+.daily .ibox-tools .fa-calendar{
+	position: absolute;
+	right:0;
+}
+.daily .ibox-content span {
+	margin: 5px 20px 5px 0;
+	padding: 0;
+	font-size: 14px;
+}
+.daily .ibox-content span:nth-child(2n) {
+	color: #0069b6;
+	font-weight: 600;
+}
+.holiday .ibox-content span:nth-child(2n) {
+	color: #0069B6;
+	font-weight: 600;
+}

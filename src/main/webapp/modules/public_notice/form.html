@@ -1,0 +1,132 @@
+<#setting date_format='yyyy-MM-dd'>
+<style>
+.form-group textarea{
+	height:100px;
+}
+</style>
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>公告信息-<#if publicNotice??>修改<#else>添加</#if></h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+               		 <form method="get" class="form-horizontal" id="publicNoticeForm">
+               		 	<input type="hidden" name="id" value="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">标题</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="title" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">内容</label>
+                            <div class="col-sm-10">
+								<textarea class="form-control" name="content"><#if publicNotice??><#assign content = "${publicNotice.content?replace('huanhang','\r\n')}">${content}</#if></textarea>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">发布者</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="publisher" value="${user.acount}" readonly>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">截止时间</label>
+                            <div class="col-sm-10">
+								<input class="form-control layer-date" type="text" name="endTime" id="noticeDeadTime" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存内容</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	<#if publicNotice??>
+	$('#publicNoticeForm input[name="id"]').val('${publicNotice.id!""}');
+	$('#publicNoticeForm input[name="title"]').val('${publicNotice.title!""}');
+	/* $('#publicNoticeForm textarea[name="content"]').html('${publicNotice.content}'); */
+	$('#publicNoticeForm input[name="publisher"]').val('${publicNotice.publisher!""}');
+	$('#publicNoticeForm input[name="endTime"]').val('${publicNotice.endTime?number_to_date!""}');
+	</#if>
+	laydate.render({
+		elem: '#noticeDeadTime', //指定元素
+		format: 'yyyy-MM-dd',
+		min: new Date().Format('yyyy-MM-dd'),
+		theme: '#5a98de',
+	});
+	
+	$('.i-checks').iCheck({
+	    checkboxClass: 'icheckbox_square-green',
+	    radioClass: 'iradio_square-green',
+	});
+	
+	
+	$("#publicNoticeForm").validate({
+        rules: {
+        	title: {
+                required: true,
+                rangelength: [1,16]
+            },
+            content: {
+                required: true,
+                rangelength: [1,200]
+            },
+            publisher: {
+                required: true,
+                rangelength: [2,20]
+            },
+            endTime: {
+                required: true
+            }
+        },
+        messages: {
+        	title: {
+                required: icon + "请输入标题",
+                rangelength: icon + "标题输入长度必须介于1和16之间"
+            },
+            content: {
+                required: icon + "请输入内容",
+                rangelength: icon + "内容输入长度必须介于1和200之间"
+            },
+            publisher: {
+                required: icon + "请输入发布者",
+            },
+            endTime: {
+                required: icon + "请选择截止时间"
+            }
+        },
+        submitHandler:function(form){
+        	var submitObj = $("#publicNoticeForm").serializeObject(),
+        		params = {};
+        	submitObj.endTime = new Date(submitObj.endTime).getTime() + 3600000 * 16 - 1000;
+        	for(i in submitObj.content) {
+        		submitObj.content = submitObj.content.replace(/\r/g, "").replace(/\n/g, "huanhang");
+           	}
+        	params = {
+        			jsonStr: JSON.stringify(submitObj)	
+        	};
+        	save(params, 'publicNotice');
+        } 
+	});
+		
+</script>

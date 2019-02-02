@@ -1,0 +1,326 @@
+<!-- 选择车间弹窗模板 -->
+<div class="hide" id="shopChosenTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<input type="text" class="form-control input-sm m-b-xs filter" id="filter" placeholder="搜索表格...">
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+						<th data-sort-ignore="true"></th>
+					    <th>编号</th>
+					    <th>名称</th>
+					    <th>创建时间</th>
+					</tr>
+				</thead>
+				<script id="shopDatas" type="text/html">
+				{{# if(d.length > 0) { }}
+				{{# layui.each(d, function(index, item){ }}
+				<tr>
+					<td onclick="singleChosen(this)">
+						<input type="radio" class="i-checks" name="chosenShop" data-id='{{item.id}}' value='{"id":"{{item.id}}","shopNumber": "{{item.shopNumber}}","shopName": "{{item.shopName}}"}' >
+					</td>
+    				<td>{{item.shopNumber?item.shopNumber:"-"}}</td>
+    				<td>{{item.shopName?item.shopName:"-"}}</td>
+    				<td>{{new Date(item.createTime).Format("yyyy-MM-dd")}}</td>
+				</tr>
+				{{# }); }}
+				{{# } }}
+				</script>
+				<tbody id="shop-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="5">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+<!-- 选择产品弹窗模板 -->
+<div class="hide" id="productChosenTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<input type="text" class="form-control input-sm m-b-xs filter" id="filter" placeholder="搜索表格...">
+	
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+						<th data-sort-ignore="true"></th>
+					    <th>产品名称</th>
+					    <th>产品规则</th>
+					    <th>产品编号</th>
+					    <th>产地</th>
+					</tr>
+				</thead>
+				<script id="productDatas" type="text/html">
+		 		{{# if(d.length > 0) { }}
+				{{# layui.each(d, function(index, item){ }}
+				<tr>
+	                <td onclick="singleChosen(this)">
+	                <input type="radio" class="i-checks" name="chosenProduct" data-id='{{item.id}}' data-str='{{item.str}}' value='{"id": "{{item.id}}","productName": "{{item.productName}}","productNumber": "{{item.productNumber}}","productSize": "{{item.productSize}}","productAddrses": "{{item.productAddrses}}"}'>
+	                </td>
+	                <td>{{item.productName?item.productName:'-'}}</td>
+	                <td>{{item.productSize?item.productSize:'-'}}</td>
+	                <td>{{item.productNumber?item.productNumber:'-'}}</td>
+	                <td>{{item.productAddrses?item.productAddrses:'-'}}</td>
+				</tr>
+				{{# }); }}
+				{{# } }}
+				</script>
+				<tbody id="product-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="5">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- 选择产品线弹窗模板 -->
+<div class="hide" id="productionLineChosenTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<input type="text" class="form-control input-sm m-b-xs filter" id="filter" placeholder="搜索表格...">
+	
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+						<th data-sort-ignore="true"></th>
+					    <th>产品线编号</th>
+					    <th>名称</th>
+					    <th>创建时间</th>
+					</tr>
+				</thead>
+				<script id="productionLineDatas" type="text/html">
+		 		{{# if(d.length > 0) { }}
+				{{# layui.each(d, function(index, item){ }}
+					<tr>
+	                    <td onclick="singleChosen(this)">
+						<input type="radio" class="i-checks" name="chosenProductionLine" data-id='{{item.id}}' value='{"id":"{{item.id}}","lineNumber": "{{item.lineNumber}}","name": "{{item.name}}"}' ></td>
+	                    <td>{{item.lineNumber?item.lineNumber:"-"}}</td>
+	                    <td>{{item.name?item.name:"-"}}</td>
+	                    <td>{{new Date(item.createTime).Format("yyyy-MM-dd")}}</td>
+					</tr>
+				{{# }); }}
+				{{# } }}
+				</script>
+				<tbody id="productionLine-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="5">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- 选择设备弹窗模板 -->
+<div class="hide" id="deviceChosenTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<input type="text" class="form-control input-sm m-b-xs filter" id="filter" placeholder="搜索表格...">
+	
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+						<th data-sort-ignore="true"></th>
+					    <th>工控机编号</th>
+					    <th>设备编号</th>
+					    <th>设备模型</th>
+					    <th>连接串</th>
+					    <th>创建时间</th>
+					</tr>
+				</thead>
+				<script id="deviceDatas" type="text/html">
+		 		{{# if(d.length > 0) { }}
+				{{# layui.each(d, function(index, item){ }}
+					<tr>
+	                    <td onclick="singleChosen(this)">
+						<input type="radio" class="i-checks" name="chosenDevice" data-id='{{item.id}}' value='{"id": "{{item.id}}","model": "{{item.model}}","deviceNumber": "{{item.deviceNumber}}", "connectionString": "{{item.connectionString}}","ipcId":"{{item.ipcId}}"}' ></td>
+	                    <td>{{item.ipcId?item.ipcId:"-"}}</td>
+	                    <td>{{item.deviceNumber?item.deviceNumber:"-"}}</td>
+						<td>{{item.model?item.model:"-"}}</td>
+	                    <td>{{item.connectionString?item.connectionString:"-"}}</td>
+	                    <td>{{new Date(item.createTime).Format("yyyy-MM-dd")}}</td>
+					</tr>
+				{{# }); }}
+				{{# } }}
+				</script>
+				<tbody id="device-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="6">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+<!-- 选择产品码规则弹窗模板 -->
+<div class="hide" id="codeRuleChosenTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<input type="text" class="form-control input-sm m-b-xs filter" id="filter" placeholder="搜索表格...">
+	
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+						<th data-sort-ignore="true"></th>
+	                    <th data-toggle="true">规则编号</th>
+	                    <th>名称</th>
+	                    <th>正则表达式</th>
+	                </tr>
+				</thead>
+				<script id="codeRuleDatas" type="text/html">
+		 		{{# if(d.length > 0) { }}
+				{{# layui.each(d, function(index, item){ }}
+				{{# if(item.status == 2){ }}
+				<tr>
+	                <td onclick="singleChosen(this)">
+	                <input type="radio" class="i-checks" name="chosenCodeRule" data-id='{{item.code}}' data-name='{{item.name}}'>
+	                </td>
+	                <td>{{item.code}}</td>
+	                <td>{{item.name}}</td>
+	                <td>{{toTxt(item.pattern)}}</td>
+				</tr>
+				{{# } }}
+				{{# }); }}
+				{{# } }}
+				</script>
+				<tbody id="codeRule-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="5">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- 选择工控机编号弹窗模板 -->
+<div class="hide" id="ipcChosenTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<input type="text" class="form-control input-sm m-b-xs filter" id="filter" placeholder="搜索表格...">
+	
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+						<th data-sort-ignore="true"></th>
+	                    <th data-toggle="true">ID</th>
+	                    <th>编号</th>
+	                    <th>生产线</th>
+	                    <th>mac地址</th>
+	                    <th>ip地址</th>
+	                </tr>
+				</thead>
+				<!-- , "productionLine": {"id":"{{item.productionLine.id}}","lineNumber": "{{item.productionLine.lineNumber}}","name": "{{item.productionLine.name}}"} -->
+				<script id="ipcDatas" type="text/html">
+		 		{{# if(d.length > 0) { }}
+				{{# layui.each(d, function(index, item){ }}
+				<tr>
+	                <td onclick="singleChosen(this)">
+					{{# if(item.productionLine){ }}
+					<input type="radio" class="i-checks" name="chosenIpc" data-id='{{item.id}}' value='{"id": "{{item.id}}","seriesNumber": "{{item.seriesNumber}}","macAddr": "{{item.macAddr}}", "ipAddr": "{{item.ipAddr}}", "productionLine": {"id":"{{item.productionLine.id}}","lineNumber": "{{item.productionLine.lineNumber}}","name": "{{item.productionLine.name}}"}}'>
+					{{# }else{ }}
+					<input type="radio" class="i-checks" name="chosenIpc" data-id='{{item.id}}' value='{"id": "{{item.id}}","seriesNumber": "{{item.seriesNumber}}","macAddr": "{{item.macAddr}}", "ipAddr": "{{item.ipAddr}}", "productionLine": null}'>
+					{{# } }}
+	                
+	                </td>
+	                <td>{{item.id}}</td>
+	                <td>{{item.seriesNumber}}</td>
+	                <td>{{item.productionLine?item.productionLine.name:''}} {{item.productionLine?item.productionLine.lineNumber:''}}</td>
+	                <td>{{item.macAddr}}</td>
+	                <td>{{item.ipAddr}}</td>
+				</tr>
+				{{# }); }}
+				{{# } }}
+				</script>
+				<tbody id="ipc-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="5">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+<!-- 选择选择产品码弹窗模板 -->
+<div class="hide" id="productCodeChosenTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<div style="margin-bottom:45px;">
+	           	<div style="margin:8px 5px 0 0;float:left;"><label class="control-label" style="text-align:right" >导出数量:</label></div>
+				<input class="form-control genCount" style="width:200px;float:left;" type="number" placeholder="二维码导出数量"  min=1 onkeydown="prevent('e','.')" num="" onkeyup="changeNum(this)">
+            </div>
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+						<th data-sort-ignore="true"></th>
+                        <th data-toggle="true">名称</th>
+                        <th>类型</th>
+                        <th>所属产品</th>
+                        <th>产品码规则</th>  
+	                </tr>
+				</thead>
+				<script id="productCodeDatas" type="text/html">
+		 		{{# if(d.length > 0) { }}
+				{{# layui.each(d, function(index, item){ }}
+				<tr>
+	                <td onclick="singleChosen(this)">
+				
+					<input type="radio" class="i-checks" name="chosenProductCode" data-id='{{item.id}}' value='{"id": "{{item.id}}","ruleId": "{{item.codeRuleId}}","codeName": "{{item.codeName}}"}'>
+					
+	                </td>
+	                <td>{{item.codeName}}</td>
+	                <td>{{item.codeType==1?"物联码":"物流码"}}</td>
+	                <td>{{item.product.productName}}</td>
+	                <td>{{item.codeRuleId}}</td>
+				</tr>
+				{{# }); }}
+				{{# }else{ }}
+					<tr>
+						<td>暂无数据</td>
+					</tr>
+				{{# }}}
+				</script>
+				<tbody id="productCode-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="5">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	function changeNum(e){
+		var num = e.value;
+		$('#productCodeChosenTpl .genCount').val(num);
+	}
+</script>
+				

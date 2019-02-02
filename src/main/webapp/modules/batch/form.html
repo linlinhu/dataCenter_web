@@ -1,0 +1,357 @@
+<#setting date_format='yyyy-MM-dd'>
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>产品信息-<#if batch??>修改<#else>添加</#if></h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+               		 <form method="get" class="form-horizontal" id="batchForm">
+               		 	<input type="hidden" name="id" value="">
+               		 	<input type="hidden" name="batchState" value="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">编号</label>
+                            <div class="col-sm-4">
+								<input class="form-control" type="text" name=code value="">
+                            </div>
+                             <label class="col-sm-2 control-label">预计生产数量</label>
+                            <div class="col-sm-4">
+								<input class="form-control" type="number" name="productCount" value="" onkeydown="prevent('e','.')">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">创建日期</label>
+                            <div class="col-sm-4">
+								<input class="form-control" type="text" name="carteDate" value="" id="batchCarteDate" readonly>
+                            </div>
+                            <label class="col-sm-2 control-label">对外生产日期</label>
+                            <div class="col-sm-4">
+								<input class="form-control" type="text" name="productDate" value="" id="batchProductDate" readonly>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">产品</label>
+                            <div class="col-sm-10">
+								<input type="hidden" name="product">
+								<input class="form-control" type="text" name="productName" value="" readonly onclick="choseAProduct(this, 'bfromProduct', 'batchForm')">
+                            </div>
+                        </div>
+                        <div class="form-group hide">
+                            <label class="col-sm-2 control-label">包装数量</label>
+                            <div class="col-sm-10">
+								<input type="hidden" name="packageAmount">
+								<span class="form-control" type="text" name="packageAmountName"></span>
+                            </div>
+                        </div>
+                        <div class="form-group hide">
+                            <label class="col-sm-2 control-label">产品特性</label>
+                            <div class="col-sm-10">
+								<select class="form-control dis-select chosen-select" name="productTemplete" multiple='multiple' id="batchFormProductTemplete" data-placeholder="选择产品特性">
+                                   	<#if batch??>
+	                                   	<#if batch.product.productTemplete?? && batch.product.productTemplete?size gt 1>
+	                                   		<#list batch.product.productTemplete as productTemplete>
+	                                   			 <#if productTemplete.type == 1>
+	                                   			 <option value='{"prdFeatureTemplateName":"${productTemplete.prdFeatureTemplateName}","value":"${productTemplete.value}"}'
+	                                   			 	<#if batch.productTemplete?? && batch.productTemplete?size gt 0>
+				                                   		<#list batch.productTemplete as item>
+				                                   			<#if item.value = productTemplete.value && item.prdFeatureTemplateName = productTemplete.prdFeatureTemplateName>
+				                                   			selected
+				                                   			</#if>
+				                                   		</#list>
+				                                   	</#if>
+	                                   			 >${productTemplete.prdFeatureTemplateName}：${productTemplete.value}</option>
+	                                   			 </#if>
+	                                   		</#list>
+	                                   	<#else>
+	                                   		<option value="">暂无</option>
+	                                   	</#if>
+                                   	</#if>
+                                   
+                                </select>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">生产线</label>
+                            <div class="col-sm-10">
+								<input type="hidden" name="productionLine">
+								<input class="form-control" type="text" name="productionLineName" value="" readonly onclick="batchChoseAProductionLine(this, 'bformProductionLine')">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">车间</label>
+                            <div class="col-sm-10">
+								<input type="hidden" name="shop">
+								<input class="form-control" type="text" name="shopName" onclick="choseAShop(this, 'bformShop')" value="" readonly>
+                            </div>
+                        </div>
+                        <div class="productionMode hide">
+	                        <div class="hr-line-dashed"></div>
+	                        <div class="form-group">
+	                            <label class="col-sm-2 control-label">打印_生产模式</label>
+	                            <div class="col-sm-10">
+									<input type="hidden" name="printProductionMode">
+									<input class="form-control" type="text" name="printProductionModeName" onclick="setProductionMode(1)" value="" readonly>
+	                            </div>
+	                        </div>
+	                        <div class="hr-line-dashed"></div>
+	                        <div class="form-group">
+	                            <label class="col-sm-2 control-label">校验_生产模式</label>
+	                            <div class="col-sm-10">
+									<input type="hidden" name="scanProductionMode">
+									<input class="form-control" type="text" name="scanProductionModeName" onclick="setProductionMode(2)" value="" readonly>
+	                            </div>
+	                        </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存内容</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+				
+<script>
+
+	var dateStr = new Date().Format('yyyy-MM-dd');
+	
+	<#if batch??>
+		$('#batchForm input[name="id"]').val('${batch.id!""}');
+		$('#batchForm input[name="batchState"]').val('${batch.batchState!""}');
+		$('#batchForm input[name="code"]').val('${batch.code!""}');
+		$('#batchForm input[name="productCount"]').val('${batch.productCount?replace(",","")}');
+		$('#batchForm input[name="carteDate"]').val('${batch.carteDate?date}');
+		$('#batchForm input[name="productDate"]').val('${batch.productDate?date}');
+		$('#batchForm input[name="productName"]').val('${batch.product.productName!""}');
+		$('#batchForm input[name="productName"]').attr('data-id', '${batch.product.id!""}');
+		$('#batchForm input[name="product"]').val('{"id": "${batch.product.id!}","productName": "${batch.product.productName!}","productNumber": "${batch.product.productNumber!}","productSize": "${batch.product.productSize!}","productAddrses": "${batch.product.productAddrses!}"}');
+		$('#batchForm input[name="productionLineName"]').val('${batch.productionLine.name!""}');
+		$('#batchForm input[name="productionLineName"]').attr('data-id', '${batch.productionLine.id!""}');
+		$('#batchForm input[name="productionLine"]').val('{"id":"${batch.productionLine.id!}","lineNumber": "${batch.productionLine.lineNumber!}","name": "${batch.productionLine.name!}"}');
+		$('#batchForm input[name="shopName"]').val('${batch.shop.shopName!""}');
+		$('#batchForm input[name="shopName"]').attr('data-id', '${batch.shop.id!""}');
+		$('#batchForm input[name="shop"]').val('{"id":"${batch.shop.id!}","shopNumber": "${batch.shop.shopNumber!}","shopName": "${batch.shop.shopName!}"}');
+		$('#batchForm input[name="printProductionMode"]').val('${batch.printProductionMode.id}');
+		$('#batchForm input[name="printProductionModeName"]').attr('data-id','${batch.printProductionMode.id}')
+		$('#batchForm input[name="printProductionModeName"]').val('${batch.printProductionMode.productionModeName}');
+		$('#batchForm input[name="scanProductionMode"]').val('${batch.scanProductionMode.id}');
+		$('#batchForm input[name="scanProductionModeName"]').attr('data-id','${batch.scanProductionMode.id}')
+		$('#batchForm input[name="scanProductionModeName"]').val('${batch.scanProductionMode.productionModeName}');
+		$('#batchForm .productionMode').removeClass('hide');
+		<#if batch.packageAmount??>
+			$('#batchForm .form-group').removeClass('hide');
+			$('#batchForm input[name="packageAmount"]').val('${batch.packageAmount}');
+			$('#batchForm span[name="packageAmountName"]').html('${batch.packageAmount}')
+			$('#batchForm .dis-select').chosen({
+				allow_single_deselect: true, //删除选项
+				max_selected_options: 999, //多选上限
+				disable_search:true, //禁用搜索框
+				placeholder_text_multiple:'请选择产品特性' //提示值
+			}); 
+			/* $('#batchForm .dis-select').on('chosen:ready', function(e, params) {
+				$(".dis-select").val(whiteList)//设置值  
+				$('.dis-select').trigger('chosen:updated');//更新选项  
+				console.log('准备就绪')
+			}); */
+			
+			//获取select的内容
+			$('#batchForm .dis-select').on('change', function(e, params) {
+			 console.log($(this).val())
+			});
+		</#if>
+		
+	<#else>
+		$('#batchForm input[name="carteDate"]').val(dateStr);
+		$('#batchForm input[name="productDate"]').val(dateStr);
+	</#if>
+	
+	laydate.render({
+		elem: '#batchCarteDate', //指定元素
+		format: 'yyyy-MM-dd',
+		theme: '#5a98de',
+	});
+	laydate.render({
+		elem: '#batchProductDate', //指定元素
+		format: 'yyyy-MM-dd',
+		theme: '#5a98de',
+	});
+	$("#batchForm").validate({
+        rules: {
+        	code: {
+                required: true,
+                rangelength: [1,20]
+            },
+            productCount: {
+                required: true,
+				number: true,
+                rangelength: [1,10],
+            	min:1
+            },
+            carteDate: {
+                required: true
+            },
+            productDate: {
+                required: true
+            },
+            productName: {
+                required: true
+            },
+            productionLineName: {
+                required: true
+            },
+            shopName: {
+                required: true
+            }
+        },
+        messages: {
+        	code: {
+                required: icon + "请输入编号",
+                rangelength: icon + "编号输入长度必须介于1和20之间"
+            },
+            productCount: {
+                required: icon + "请输入预计生产数量",
+                number: icon + "生产数量只能输入数字",
+                min: icon + "生产数量的值必须大于0",
+                rangelength: icon + "生产数量输入长度必须介于1和10之间"
+            },
+            carteDate: {
+                required: icon + "请选择创建日期"
+            },
+            productDate: {
+                required: icon + "请选择对外生产日期"
+            },
+            productName: {
+                required: icon + "请选择产品"
+            },
+            productionLineName: {
+                required: icon + "请选择产品线"
+            },
+            shopName: {
+                required: icon + "请选择车间"
+            }
+        },
+        submitHandler:function(form){
+        	var submitObj = $("#batchForm").serializeObject(),
+        		params = {};
+			console.log('submitObj',submitObj)
+        	submitObj.product = JSON.parse(submitObj.product);
+        	submitObj.productionLine = JSON.parse(submitObj.productionLine);
+        	submitObj.shop = JSON.parse(submitObj.shop);
+        	submitObj.printProductionMode = {id:submitObj.printProductionMode};
+        	submitObj.scanProductionMode = {id:submitObj.scanProductionMode};
+        	if(typeof submitObj.productTemplete == 'string'){
+        		submitObj.productTemplete = [JSON.parse(submitObj.productTemplete)];
+        	} else if(typeof submitObj.productTemplete == 'object'){
+        		for(var i = 0; i < submitObj.productTemplete.length; i++) {
+            		submitObj.productTemplete[i] = JSON.parse(submitObj.productTemplete[i])
+            	};
+        	}
+        	delete submitObj.productName;
+        	delete submitObj.productionLineName;
+        	delete submitObj.shopName;
+        	params = {
+            		jsonStr: JSON.stringify(submitObj)
+            };
+        	save(params, 'batch');
+        } 
+	});
+	function setProductionMode(modeType){
+		var productionLine = $('#batchForm input[name="productionLine"]').val(),
+			params = {};
+		
+		if(productionLine.length > 0){
+			productionLine = JSON.parse(productionLine);
+			params = {
+				modeType:modeType,
+				productionLineId:productionLine.id
+			};
+			choseAProductionMode(this, 'idPrefix', 'batchForm', params)
+		} else {
+			layer.msg('请先选择一条生产线',{icon:5})
+		}
+	}
+	
+	/**
+	 * 只用于批次管理 选择一条产品线
+	 * @param self 本体
+	 * @param idPrefix 唯一标识符前缀
+	 */
+	function batchChoseAProductionLine(self, idPrefix, formId){
+		var dataId = $(self).attr('data-id'),
+			formId = formId ? formId : $(self).parent().parent().parent().attr('id'),
+			productionLineTpl = productionLineDatas.innerHTML,//数据模板
+			productionLineView = document.getElementById('productionLine-view');//数据视图容器
+		
+		loading = layer.load();	
+		$.ajax({
+			url: basePath + 'productionLine/loadProductionLine',
+			type: 'get',
+			success:function(result){
+				layer.close(loading);
+				if (result.success) {
+					laytpl(productionLineTpl).render(result.data, function(html){
+						productionLineView.innerHTML = html;
+						//form的id只能实时生成，单页面应用需要保证id的唯一性。
+						layer.open({
+							type : 1,
+							title : '选择一条产品生产线',
+							skin : 'layui-layer-rim', //加上边框
+							area : [ '60%', '480px' ], //宽高
+							content : '<div class="wrapper-content" id="' + idPrefix + 'Chosen">' + $('#productionLineChosenTpl').html() + '</div>',
+							btn : [ '已选择', '取消' ],
+							yes : function(lindex, layero) {
+								var productionLine = $('#' + idPrefix + 'Chosen .iradio_square-green.checked').find('input[name="chosenProductionLine"]').val(),
+									productionLineObj = (productionLine && productionLine.length > 0) ? JSON.parse(productionLine) : null;
+									
+								if (productionLineObj) {
+									console.log($('#' + formId + '.productionMode'))
+									$('#' + formId + ' .productionMode').removeClass('hide');
+									$('#' + formId + ' .productionMode input').val('');
+									$('#' + formId + ' .productionMode input').removeAttr('data-id');
+									$('#' + formId + ' input[name="productionLine"]').val(productionLine);
+									$('#' + formId + ' input[name="productionLineName"]').val(productionLineObj.name);
+									$('#' + formId + ' input[name="productionLineName"]').attr('data-id', productionLineObj.id);
+									layer.close(lindex);
+								} else {
+									layer.msg('请选择一条产品线');
+								}
+								return false;
+							}
+						});
+
+						$('#' + idPrefix + 'Chosen .i-checks').iCheck({
+						    checkboxClass: 'icheckbox_square-green',
+						    radioClass: 'iradio_square-green',
+						});
+						if(dataId) {
+							$('#' + idPrefix + 'Chosen .iradio_square-green.checked').removeClass('checked');
+						}
+						$('#' + idPrefix + 'Chosen input[data-id="' + dataId + '"]').parent().addClass('checked');
+						$('#' + idPrefix + 'Chosen .filter').attr('id', idPrefix + 'Filter');
+						$('#' + idPrefix + 'Chosen .footable').attr('data-filter', '#' + idPrefix + 'Filter');
+						$('#' + idPrefix + 'Chosen .footable').footable();	
+						$('#' + idPrefix + 'Chosen #productionLine-view').attr('id-prefix', idPrefix);
+					});
+				}
+			}
+		});
+	}
+	
+	
+	
+	
+</script>

@@ -1,0 +1,188 @@
+<!-- 校验生产模式设备编辑弹框 -->
+<div class="hide" id="productionModeDeviceTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="filter-line">
+              	<form method="get" id="PMManageForm">
+              		<input type="hidden" name="id">
+              		<input type="hidden" name="index">
+              		<input type="hidden" name="productionModeId">
+              		
+              		<!-- <input placeholder="分组" class="form-control" type="text" name="mateGroup" style="width:25% !important"> -->
+	                <select class="form-control" type="text" name="mateGroup" style="width:25% !important">
+	                
+	                </select>
+	                <input type="hidden" name="device">
+	                <input placeholder="设备" class="form-control" type="text" name="deviceName" style="width:25% !important" onclick="choseADevice(this, 'PMManageForm', 'PMManageForm')" data-id="" readonly>
+                    <button type="button" class="btn btn-primary change">添加</button>
+             		<button type="button" class="btn btn-default reset">重置</button>
+              		
+               	</form>
+			</div>
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+						<th>分组</th>
+					    <th>设备</th>
+					    <th>产品码序号</th>
+					    <th>操作</th>
+					</tr>
+				</thead>
+				<script id="productionModeDeviceDatas" type="text/html">
+				{{# if(d && d.length > 0) { }}
+				{{# layui.each(d, function(index1, list){ }}
+				{{# layui.each(list.list, function(index, item){ }}
+				<tr class="datas" index="{{index + 1}}" data-id="{{item.id}}" mateGroup="{{index1+1}}" device='{{item.deviceStr}}' number="{{index+1}}" productionModeId = '{{item.productionMode.id}}'>
+					<td>第{{index1+1}}组</td>
+    				<td>{{item.device?item.device.deviceNumber:"-"}} {{item.device?item.device.model:"-"}}</td>
+    				<td>
+						{{index + 1}}
+						{{# if(index==0) { }}
+							（主码）
+						{{# } }}
+					</td>
+					<td>
+						<a class="edit" alt="编辑" title="编辑"><i class="fa fa-pencil text-navy"></i> &nbsp;&nbsp;</a>
+						<a class="remove" alt="删除" title="删除"><i class="fa fa-trash text-navy"> &nbsp;&nbsp;</i></a>
+							{{# if(list.list.length > 1){ }}
+								{{# if(index > 0){ }}
+									<a href="javascript:void(0);" onclick="deviceMoveUp({{index + 1}},{{index1+1}})" alt="上移" title="上移"><i class="fa fa-arrow-circle-o-up text-navy">&nbsp;</i></a>
+								{{# } }}
+								{{# if(index != list.list.length -1){ }}
+									<a href="javascript:void(0);" onclick="deviceMoveDown({{index + 1}},{{index1+1}})" alt="下移" title="下移"><i class="fa fa-arrow-circle-o-down text-navy">&nbsp;</i></a>
+								{{# } }}
+							{{# } }}
+					</td>
+				</tr>
+				{{# }); }}
+				{{# }); }}
+				{{# } else { }}
+					<td>暂无数据</td>
+				{{# } }}
+				</script>
+				<tbody id="productionModeDevice-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="5">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+<!-- 打印生产模式设备编辑弹框 -->
+<div class="hide" id="printProductionModeDeviceTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="filter-line">
+              	<form method="get" id="PPMManageForm">
+              		<input type="hidden" name="id">
+              		<input type="hidden" name="index">
+              		<input type="hidden" name="productionModeId">
+	                <input type="hidden" name="device">
+	                <input placeholder="设备" class="form-control" type="text" name="deviceName" style="width:25% !important" onclick="choseADevice(this, 'PPMManageForm', 'PPMManageForm')" data-id="" readonly>
+                    <button type="button" class="btn btn-primary change">添加</button>
+             		<button type="button" class="btn btn-default reset">重置</button>
+               	</form>
+			</div>
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+					    <th>设备</th>
+					    <th>产品码序号</th>
+					    <th>操作</th>
+					</tr>
+				</thead>
+				<script id="printProductionModeDeviceDatas" type="text/html">
+				{{# if(d && d.length > 0) { }}
+				{{# layui.each(d, function(index, item){ }}
+				<tr class="datas" index="{{index + 1}}" data-id="{{item.id}}" device='{{item.deviceStr}}' number="{{index+1}}" productionModeId = '{{item.productionMode.id}}'>
+    				<td>{{item.device?item.device.deviceNumber:"-"}} {{item.device?item.device.model:"-"}}</td>
+    				<td>
+						{{index + 1}}
+					</td>
+					<td>
+						<a class="edit" alt="编辑" title="编辑"><i class="fa fa-pencil text-navy"></i> &nbsp;&nbsp;</a>
+						<a class="remove" alt="删除" title="删除"><i class="fa fa-trash text-navy"> &nbsp;&nbsp;</i></a>
+							{{# if(d.length > 1){ }}
+								{{# if(index > 0){ }}
+									<a href="javascript:void(0);" onclick="printMoveUp({{index + 1}})" alt="上移" title="上移"><i class="fa fa-arrow-circle-o-up text-navy">&nbsp;</i></a>
+								{{# } }}
+								{{# if(index != d.length -1){ }}
+									<a href="javascript:void(0);" onclick="printMoveDown({{index + 1}})" alt="下移" title="下移"><i class="fa fa-arrow-circle-o-down text-navy">&nbsp;</i></a>
+								{{# } }}
+							{{# } }}
+					</td>
+				</tr>
+				{{# }); }}
+				{{# } else { }}
+					<td>暂无数据</td>
+				{{# } }}
+				</script>
+				<tbody id="printProductionModeDevice-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="5">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- 选择生产模式弹窗模板 -->
+<div class="hide" id="productionModeChosenTpl">
+	<div class="row">
+		<div class="col-sm-12">
+			<input type="text" class="form-control input-sm m-b-xs filter" id="filter" placeholder="搜索表格...">
+			<table class="footable table table-stripped" data-page-size="5" data-filter=#filter>
+				<thead>
+					<tr>
+						<th data-sort-ignore="true"></th>
+					    <th>生产线</th>
+					    <th>模式名称</th>
+					    <th>模式类型</th>
+					</tr>
+				</thead>
+				<script id="productionModeDatas" type="text/html">
+				{{# if(d.length > 0) { }}
+				{{# layui.each(d, function(index, item){ }}
+				{{# if(item.productionModeState == 2){ }}
+				<tr>
+					<td onclick="singleChosen(this)">
+						<input type="radio" class="i-checks" name="chosenProductionMode" data-id='{{item.id}}' value='{"id":"{{item.id}}","productionModeName":"{{item.productionModeName}}"}'>
+					</td>
+    				<td>{{d[0].productionLine.name?d[0].productionLine.name:"-"}}</td>
+    				<td>{{item.productionModeName?item.productionModeName:"-"}}</td>
+    				<td>
+						{{# if(item.modeType == 1){ }}
+							打印
+						{{# } else { }}
+							校验
+						{{# } }}
+					</td>
+				</tr>
+				{{# } }}
+				{{# }); }}
+				{{# } else { }}
+					<tr>
+						<td>暂无数据</td>
+					</tr>
+				{{# } }}
+				</script>
+				<tbody id="productionMode-view"></tbody>
+				<tfoot>
+				    <tr>
+				        <td colspan="5">
+				            <ul class="pagination pull-right"></ul>
+				        </td>
+				    </tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+</div>

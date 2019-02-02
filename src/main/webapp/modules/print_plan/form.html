@@ -1,0 +1,171 @@
+<style>
+	.print-plan-use button{
+		margin: 20px;
+		width: 30%;
+		min-width: 200px;
+		height: 50px;
+		font-size:18px;
+	}
+	
+	.print-plan-use button:hover,
+	.print-plan-use button:hover i.fa {
+		background-color: #5a98de;
+		border-color: #5a98de;
+		color: #FFFFFF;
+	}
+	#printPlanForm > .content {
+		background: #fff;
+	}
+	#printPlanForm > .steps > ul > li {
+	    width: 33%;
+	}
+	#printPlanForm .content .body {
+		width: 100%;
+	}
+	
+	#printPlanForm .content .body:last-child {
+		overflow: hidden;
+		overflow-y: scroll;
+	}
+	#ppForm-deviceChosen .iradio_square-green.disabled {
+		background-position: -216px 0;
+	}
+</style>
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>添加打印方案</h5>
+                    <div class="ibox-tools">
+                       	<a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form class="wizard-big form-horizontal" id="printPlanForm">
+                            <h1>选择用途</h1>
+                            <fieldset>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                    	<input type="hidden" name="deviceType">
+                                        <ul class="text-center print-plan-use">
+                                        	<li>选择方案的用途</li>
+                                        	<li><button class="btn btn-default" type="button" onclick="choosePrintPlanUse(this, 1)"><i class="fa fa-barcode">&nbsp;打码</i></button></li>
+                                        	<li><button class="btn btn-default" type="button" onclick="choosePrintPlanUse(this, 2)"><i class="fa fa-tablet">&nbsp;扫码</i></button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                            <h1>选择必要因素</h1>
+                            <fieldset>
+                                <div class="form-group">
+		                            <label>选择一条生产线</label>
+									<input type="hidden" name="productionLine">
+									<input class="form-control" type="text" name="productionLineName" value="" readonly onclick="choseAProductionLine(this, 'ppFormProductionLine', 'printPlanForm')">
+		                        </div>
+		                        <div class="hr-line-dashed"></div>
+		                        <div class="form-group">
+		                            <label>选择一个产品</label>
+									<input type="hidden" name="product">
+									<input class="form-control" type="text" name="productName" value="" readonly onclick="choseAProduct(this, 'ppFormProduct', 'printPlanForm')">
+		                        </div>
+		                        <div class="hr-line-dashed"></div>
+                            </fieldset>
+                            <h1>方案配置</h1>
+                            <fieldset>
+                            	<div class="form-group hide" id="codingCenter-printCode">
+                            	<div class="row">
+	                            <label class="col-sm-2 control-label" style="text-align:left">每件物流产品个数</label>
+	                            <div class="col-sm-4">
+									<input class="form-control" type="number" name="packCount" value=""  onkeydown="prevent('e','.')">
+	                            </div>
+	                            </div>
+                                <table class="footable table table-stripped toggle-arrow-tiny" id="configDeviceTable" data-paging="false">
+					                <thead>
+					                        <tr>
+					                            <th>产品</th>
+					                            <th>产品码</th>
+					                            <th>类型</th>
+					                            <th>设备配置</th>
+					                            <th>操作</th>
+					                        </tr>
+					                    </thead>
+					                    <script id="configDeviceDatas" type="text/html">
+		 								{{# if(d.length > 0) { }}
+										{{# layui.each(d, function(index, item){ }}
+											<tr index="{{index}}" productCode = '{{item.productCode}}'>
+					                        	<td>{{item.productName?item.productName:"-"}}</td>
+					                        	<td>{{item.productCodeName?item.productCodeName:"-"}}</td>
+					                        	<td>{{item.codeType?item.codeType:"-"}}</td>
+					                        	<td>
+					                        	<input type="hidden" name="device{{index}}">
+					                        	<input class="form-control deviceName" type="text" name="deviceName{{index}}" onclick="configADevice(this, {{index}}, 'print')" readonly></td>
+					                        	<td>
+												<a href="javascript: resetDeviceConfig({{index}})"><i class="fa fa-refresh text-navy">&nbsp;重置</i></a>
+												</td>
+					                        </tr>
+										{{# }); }}
+										{{# } }}
+										</script>
+										<tbody id="configDevice-view"></tbody>
+					            </table>
+					            
+					            </div>
+					            <div class="form-group hide" id="codingCenter-scanCode">
+					            	<a href="javascript: void(0)" onclick="addVerifyGroup()" class="btn btn-primary"><i class="fa fa-pencil text-navy"></i>添加分组</a>
+					            	<dl class="row verify-group-lst">
+					            		
+									</dl>
+					            </div>
+                            </fieldset>
+                        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<dl class="hide" id="verifyGroupTemplate">
+	<dd class="col-sm-6 col-xs-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<span class="h5 title">校验分组第1组</span>
+				<div class="pull-right">
+					<span class="oper">
+						<a href="javascript:void(0)" onclick="addAVerify(this)" alt="新增校验" title="新增校验"><i class="fa fa-plus"></i>&nbsp;</a>
+						<a href="javascript:void(0)" onclick="delAVerify(this)" alt="删除一个校验" title="删除一个校验"><i class="fa fa-minus"></i>&nbsp;</a>
+						<a href="javascript:void(0)" onclick="delVerifyGroup(this)" alt="删除校验分组" title="删除校验分组"><i class="fa fa-times"></i>&nbsp;</a>
+						<a href="javascript:void(0)" onclick="confirmVerifyGroup(this)" alt="保存分组配置" title="保存分组配置"><i class="fa fa-circle-o"></i>&nbsp;</a>
+					</span>
+				</div>
+			</div>
+			<table class="footable table table-stripped toggle-arrow-tiny" data-paging="false">
+	       		<thead>
+		            <tr>
+		                <th data-toggle="true">产品码</th>
+		                <th>是否主码</th>
+		                <th>设备</th>
+		            </tr>
+		        </thead>
+				<tbody class="verify"></tbody>
+			</table>
+		</div>
+	</dd>
+</dl>
+<script id="scanProductCodesData" type="text/html">
+	<select class="form-control scan-chose-code" name="codeName">
+		<option value="">-选择产品码-</option>
+		{{# if(d.length > 0){ }}
+			{{# layui.each(d, function(index, item){ }}
+				{{# if (item && item.disabled == 0) { }}
+				<option value="{{item.productCodeId}}" productCode='{{item.productCode}}'>{{item.productCodeName}}</option>
+				{{# } }}
+			{{# }); }}
+		{{# } }}
+	</select>
+</script>
+<div class="hide" id="scanProductCodes-view"></div>
+<script src="${base}js/modules/print_plan/form.js"></script>

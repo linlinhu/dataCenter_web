@@ -1,0 +1,77 @@
+<#setting date_format='yyyy-MM-dd'>
+<style>
+.notes li {
+	margin-left:30px!important;
+}
+.notes li .item {
+	width:310px;
+	min-height:310px;
+	background:#D1E0EF;
+	color:#666666;
+}
+.notes li .item h4{
+	margin:12px 0 10px 0;
+	font-weight:600;
+}
+.notes li .item p {
+	margin:5px 0 0 0;
+	font-size:14px;
+}
+.notes li .item .tips {
+	position:absolute;
+	padding:5px 10px;
+	border-radius:4px;
+	background:#DBA636;
+	color:#fff;
+	bottom:10px;
+	right:10px;
+}
+.content {
+	height:190px;
+	width:100%;
+	
+	font-size:14px;
+	line-height:22px;
+	background:#D1E0EF;
+	border:0;
+	resize : none;	
+}
+.item {
+	border-bottom-left-radius: 100% 20px;
+}
+.item img {
+	position:absolute;
+	top:-12px;
+	left:50%;
+	height:45px;
+	width:35px;
+	margin-left:-18px;
+}
+</style>
+<div class="row">
+        <div class="col-sm-12">
+            <div class="wrapper wrapper-content animated fadeInUp" style="z-index:1">
+                <ul class="notes">
+                    <#if pulicNotices?? && pulicNotices?size gt 0>
+                    <#list pulicNotices as d>
+                     <li>
+	                    <div class="item">
+	                    	<img alt="图钉" src="${base}img/nail.png">
+	                    	<h4 class="text-center">${d.title}</h4>
+	                    		<textarea class="content"><#assign content = "${d.content?replace('huanhang','\r\n')}">${content}</textarea>
+	                    	<p class='text-right'>${d.publisher}</p>
+	                    	<p class='text-right'>${d.createTime?number_to_date}</p>
+	                    </div>   
+                    </li>
+                    </#list>
+                    <#else>
+                   	<li>
+                        <div>
+                            <p>暂无公告</p>
+                        </div>
+                    </li>
+                    </#if>
+                </ul>
+            </div>
+        </div>
+    </div>

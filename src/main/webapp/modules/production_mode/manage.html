@@ -1,0 +1,119 @@
+<#setting datetime_format='yyyy-MM-dd HH:mm:ss'>
+<#setting date_format='yyyy-MM-dd'>
+<style>
+i.color-gray{
+	color:#777!important;
+}
+</style>
+<div class="wrapper-content">
+	<div class="row">
+		<div class="col-sm-12">
+		    <div class="ibox float-e-margins">
+		        <div class="ibox-title">
+		            <h5>生产模式</h5>
+		            <div class="ibox-tools">
+		                <a class="btn btn-primary" href="javascript:goPage('form')" alt="添加" title="添加">
+		                    <i class="fa fa-plus"></i>
+		                </a>
+		            </div>
+		        </div>
+		        <div class="ibox-content">
+					<div class="filter-line">
+	                	<form method="get" class="dr-search-form" id="productionModeSearchForm">
+							<input type="hidden" name="page">
+                            <input placeholder="生产线、模式名称查询" class="form-control" type="text" name="keyword" value="${keyword!''}" role="user-params">
+                            <button type="button" class="btn btn-primary" role="submit"><i class="fa fa-search"></i></button>
+                            <button type="button" class="btn btn-default" role="reset"><i class="fa fa-refresh"></i></button>
+	                 	</form>
+	                </div>
+		            <table class="footable table table-stripped toggle-arrow-tiny" id="productionModeTable" data-page-size="${limit!10}" data-paging="false">
+		                <thead>
+		                        <tr>
+		                            <th>序号</th>
+		                            <th>生产线</th>
+		                            <th>模式名称</th>
+		                            <th>模式类型</th>
+		                            <th>模式状态</th>
+		                            <th data-hide="all">备注</th>
+		                            <th data-sort-ignore="true">操作</th>
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                    	<#if data?? &&  data.totalCount gt 0 >
+		                    	<#list data.resultList as d>
+		                    	<tr>
+		                        	<td>${(cur -1) * limit + d_index + 1 }</td>
+		                        	<td>
+			                        	${d.productionLine.name!'-'}
+		                        	</td>
+		                        	<td>
+			                        	${d.productionModeName!'-'}
+		                        	</td>
+		                        	<td>
+		                        		<#if d.modeType?? && d.modeType?length gt 0>
+			                        		<#if d.modeType==1>
+				                        		打印
+				                        	<#elseif d.modeType==2>
+				                        		校验
+				                        	</#if>
+			                        	<#else>
+			                        		-
+			                        	</#if>
+		                        	</td>
+		                        	<td>
+		                        		<#if d.productionModeState == 1>
+		                        			草稿
+			                        	<#elseif d.productionModeState == 2>
+			                        		已发布
+			                        	<#else>
+			                        		-
+			                        	</#if>
+		                        	</td>
+		                        	<td>
+		                        		<#if d.remark?? && d.remark?length gt 0>
+			                        		${d.remark}
+			                        	<#else>
+			                        		-
+			                        	</#if>
+		                        	</td>
+		                        	<td>
+		                        		<#if d.productionModeState == 1>
+		                        		<a href="javascript: goPage('form',{id:${d.id}})" alt="编辑" title="编辑"><i class="fa fa-pencil text-navy"></i> &nbsp;&nbsp;</a>
+		                        		<#if d.modeType==1>
+				                        		<a href="javascript: printModeDevices('productionModeDevices',{productionModeName:'${d.productionModeName}',productionLineName:'${d.productionLine.name}',id:'${d.id}'})" alt="模式设备" title="模式设备"><i class="fa fa-plug text-navy"></i> &nbsp;&nbsp;</a>
+				                        <#elseif d.modeType==2>
+				                        		<a href="javascript: modeDevices('productionModeDevices',{productionModeName:'${d.productionModeName}',productionLineName:'${d.productionLine.name}',id:'${d.id}'})" alt="模式设备" title="模式设备"><i class="fa fa-plug text-navy"></i> &nbsp;&nbsp;</a>
+				                        </#if>
+			                        	<a href="javascript:publishproductionMode('${d.id}');" alt="发布" title="发布"><i class="fa fa-upload text-navy">&nbsp;</i></a>&nbsp;
+		                        		</#if>
+	                                    <a href="javascript: remove('${d.id}', 'productionMode');" alt="删除" title="删除"><i class="fa fa-trash text-navy"></i></a>
+		                        	</td>
+		                        </tr>
+		                        </#list>
+		                        <#else>
+		                        <tr>
+		                        	<td colspan="7">暂无数据</td>
+		                        </tr>
+		                        </#if>
+		                        
+		                    </tbody>
+		            </table>
+		            <div class="text-right" id="productionModePage"></div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+<script>
+	<#if data??>
+	initTable({
+		modelName: 'productionMode',
+		curr: '${cur!1}',
+		totalPage: '${data.totalPageNum!1}',
+		totalCount: '${data.totalCount!1}',
+		limit: '${limit!10}'
+	});
+	</#if>
+</script>
+<script src="${base}js/modules/production_mode/manage.js"></script>
+<script src="${base}js/modules/production_mode/print.js"></script>

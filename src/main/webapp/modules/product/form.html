@@ -1,0 +1,116 @@
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>产品信息-<#if product??>修改<#else>添加</#if></h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+               		 <form method="get" class="form-horizontal" id="productForm">
+               		 	<input type="hidden" name="id" value="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">产品编号</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name=productNumber value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">产品名称</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="productName" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">产品规格</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="productSize" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">产地</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="productAddrses" value="">
+                            </div>
+                        </div>
+	                    
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存内容</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	$('.i-checks').iCheck({
+	    checkboxClass: 'icheckbox_square-green',
+	    radioClass: 'iradio_square-green',
+	});
+	
+	<#if product??>
+		$('#productForm input[name="id"]').val('${product.id!""}');
+		$('#productForm input[name="productNumber"]').val('${product.productNumber!""}');
+		$('#productForm input[name="productName"]').val('${product.productName!""}');
+		$('#productForm input[name="productSize"]').val('${product.productSize!""}');
+		$('#productForm input[name="productAddrses"]').val('${product.productAddrses!""}');
+	</#if>
+	$("#productForm").validate({
+        rules: {
+        	productNumber: {
+                required: true,
+                rangelength: [1,20]
+            },
+        	productName: {
+                required: true,
+                rangelength: [1,20]
+            },
+            productSize: {
+                required: true,
+                rangelength: [1,10]
+            },
+            productAddrses: {
+                required: true,
+                rangelength: [8,100]
+            }
+        },
+        messages: {
+        	productNumber: {
+                required: icon + "请输入产品编号",
+                rangelength: icon + "产品编号输入长度必须介于1和20之间"
+            },
+        	productName: {
+                required: icon + "请输入产品名称",
+                rangelength: icon + "产品名称输入长度必须介于1和20之间"
+            },
+            productSize: {
+                required: icon + "请输入产品规格",
+                rangelength: icon + "产品规格输入长度必须介于1和10之间"
+            },
+            productAddrses: {
+                required: icon + "请输入产地",
+                rangelength: icon + "产地输入长度必须介于8和100之间"
+            },
+        },
+        submitHandler:function(form){
+        	var submitObj = $("#productForm").serializeObject(),
+        		params = {
+            		jsonStr: JSON.stringify(submitObj)
+            	};
+        	
+        	save(params, 'product');
+        } 
+	});
+</script>

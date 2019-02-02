@@ -1,0 +1,109 @@
+<#setting datetime_format='yyyy-MM-dd HH:mm:ss'>
+<#setting date_format='yyyy-MM-dd'>
+<div class="wrapper-content">
+	<div class="row">
+		<div class="col-sm-12">
+		    <div class="ibox float-e-margins">
+		        <div class="ibox-title">
+		            <h5>产品打印方案</h5>
+		            <div class="ibox-tools">
+		                <a class="btn btn-primary" href="javascript:goPage('form')" alt="添加打印方案" title="添加打印方案">
+		                    <i class="fa fa-plus"></i>
+		                </a>
+		            </div>
+		        </div>
+		        <div class="ibox-content">
+					<div class="filter-line">
+	                	<form method="get" class="dr-search-form" id="printPlanSearchForm">
+							<input type="hidden" name="page">
+                            <!-- <input placeholder="产品、生产线查询" class="form-control" type="text" name="keyword" value="${keyword!''}" role="user-params"> -->
+                            <span class="form-group">
+								<input type="hidden" name="product" value="" role="user-params">
+								<input class="form-control" type="text" name="productName" value="${product.productName!''}" placeholder="请选择一个产品" readonly onclick="choseAProduct(this, 'pChoseProduct', 'printPlanSearchForm')">
+	                        </span>
+                            <span class="form-group">
+								<input type="hidden" name="productionLine"  value="" role="user-params">
+								<input class="form-control" type="text" name="productionLineName" value="${productionLine.name!''}" placeholder="请选择一条生产线"  readonly onclick="choseAProductionLine(this, 'pChoseProductionLine', 'printPlanSearchForm')">
+	                        </span>
+                            <button type="button" class="btn btn-primary" role="submit"><i class="fa fa-search"></i></button>
+                            <button type="button" class="btn btn-default" role="reset"><i class="fa fa-refresh"></i></button>
+	                 	</form>
+	                </div>
+		            <table class="footable table table-stripped toggle-arrow-tiny" id="printPlanTable" data-page-size="${limit!10}" data-paging="false">
+		                <thead>
+		                        <tr>
+		                            <th data-toggle="true">产品</th>
+		                            <th>产品码</th>
+		                            <th>生产线</th>
+		                            <th>设备编码</th>
+		                            <th>方案类型</th>
+		                            <th>其它信息</th>
+		                            <th>创建时间</th>
+		                            <!-- <th>操作</th> -->
+		                        </tr>
+		                    </thead>
+		                    <tbody>
+		                    	<#if plans?? &&  plans.totalCount gt 0 >
+		                    	<#list plans.resultList as d>
+		                    	<tr>
+		                        	<td>${d.productCode.product.productName!'-'}</td>
+		                        	<td>${d.productCode.codeName!'-'}</td>
+		                        	<td>${d.productionLine.name!'-'}</td>
+		                        	<td>${d.device.deviceNumber!'-'}</td>
+		                        	<td>
+		                        	<#if d.deviceType == 2>
+		                        	扫码
+		                        	<#else>
+		                        	打码
+		                        	</#if></td>
+		                        	<td>
+		                        	<#if d.deviceType == 2>
+		                        		<#if d.isMain == 1>主码,</#if>第${d.verifyGroup!'-'}组
+		                        		
+		                        	<#else>
+		                        	-
+		                        	</#if>
+		                        	</td>
+		                        	<td>${d.createTime?number_to_date}</td>
+		                        		<!-- 
+		                        	<td><a href="javascript: goPage('form?id=${d.id}')"><i class="fa fa-pencil text-navy"></i>编辑</a> 
+	                                    <a href="javascript:remove('${d.id}', 'productPrintPlan');"><i class="fa fa-trash text-navy"></i>&nbsp;删除</a>
+		                        	</td>-->
+		                        </tr>
+		                        </#list>
+		                        <#else>
+		                        <tr>
+		                        	<td colspan="7">暂无数据</td>
+		                        </tr>
+		                        </#if>
+		                        
+		                    </tbody>
+		            </table>
+		            <div class="text-right" id="printPlanPage"></div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+<script>
+<#if product?? >
+$('#printPlanSearchForm input[name="product"]').val('{"id": "${product.id!}","productName": "${product.productName!}","productNumber": "${product.productNumber!}","productSize": "${product.productSize!}","productAddrses": "${product.productAddrses!}"}');
+</#if>
+
+<#if productionLine?? >
+$('#printPlanSearchForm input[name="productionLine"]').val('{"id":"${productionLine.id}","lineNumber": "${productionLine.lineNumber}","name": "${productionLine.name}"}')
+</#if>
+
+<#if plans??>
+initTable({
+	modelName: 'printPlan',
+	curr: '${cur!1}',
+	totalPage: '${plans.totalPageNum!1}',
+	totalCount: '${plans.totalCount!1}',
+	limit: '${limit!10}'
+});
+</#if>
+$('button[role="submit"]').on('mousedown', function(){
+	$('#printPlanSearchForm input[name="page"]').val(1)
+})
+</script>

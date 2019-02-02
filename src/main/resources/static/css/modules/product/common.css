@@ -1,0 +1,17 @@
+.pc-treeWrap {
+	width: 280px;
+	background: #fff;
+	min-height: 300px;
+	max-height: 420px;
+	position: absolute;
+	border: 1px solid #e7eaec;
+	overflow-y: scroll;
+	display:none;
+}
+.pc-treeWrap .search {
+	border: 1px solid #e5e6e7;
+	width: 200px;
+	margin-left: 10px;
+	margin-top: 10px;
+	padding: 2px;
+}

@@ -1,0 +1,160 @@
+<#setting datetime_format='yyyy-MM-dd HH:mm:ss'>
+<#setting date_format='yyyy-MM-dd'>
+<style>
+#productionDetail-view dl {
+	margin-bottom: 10px;
+}
+#productionDetail-view dt,
+#productionDetail-view dd {
+	line-height: 25px;
+}
+</style>
+<div class="wrapper-content">
+	<div class="row">
+		<div class="col-sm-12">
+		    <div class="ibox float-e-margins">
+		        <div class="ibox-title">
+		            <h5>生产线管理</h5>
+		            <div class="ibox-tools">
+		                <a class="btn btn-primary" href="javascript:goPage('form')">
+		                    <i class="fa fa-plus"></i>
+		                </a>
+		            </div>
+		        </div>
+		        <div class="ibox-content" style="padding:0 15px;">
+		        	<div class="wrapper-content">
+		        	<div class="row">
+		        		<div class="col-xs-4">
+						<div class="zTreeDemoBackground">
+							<ul id="treeDemo" class="ztree"></ul>
+						</div>
+						</div>
+						<div class="col-xs-8">
+							<script id="productionDetailData" type="text/html">
+								<div class="panel-heading">{{d.name}}-详情</div>
+
+							  	<div class="panel-body" >
+							    <dl class="dl-horizontal">
+								  <dt>编号</dt>
+								  <dd>{{d.lineNumber}}</dd>
+								</dl>
+							    <dl class="dl-horizontal">
+								  <dt>名称</dt>
+								  <dd>{{d.name}}</dd>
+								</dl>
+							    <dl class="dl-horizontal">
+								  <dt>归属车间</dt>
+								  <dd>{{d.shop.shopName}}</dd>
+								</dl>
+							    <dl class="dl-horizontal">
+								  <dt>创建时间</dt>
+								  <dd>{{new Date(d.createTime).Format('yyyy-MM-dd')}}</dd>
+								</dl>
+								{{# if(d.otherInfo) {  var otherInfo = d.otherInfo;}}
+							    <dl class="dl-horizontal">
+								  <dt>其它信息</dt>
+								  	<dd>
+									{{#	for(var key in otherInfo) { }} 
+										{{key}}：{{otherInfo[key]}}<br>
+									{{# } }}
+									</dd>
+								</dl>
+								{{# } }}
+
+								</div>
+							</script>
+							<div class="panel panel-default" style="min-height:400px" id="productionDetail-view">
+							<div class="text-center" style="margin-top:50px;"><mark class="lead">点击生产线节点查看详情</mark></div>
+							</div>
+						</div>
+					</div>
+					</div>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+<SCRIPT type="text/javascript">
+		var setting = {
+			view: {
+				addDiyDom: addDiyDom
+			},
+			data: {
+				simpleData: {
+					enable: true
+				}
+			},
+			callback: {
+				onClick: onClick
+			}
+		};
+
+		var zNodes = [],
+			IDMark_Switch = "_switch",
+			IDMark_Icon = "_ico",
+			IDMark_Span = "_span",
+			IDMark_Input = "_input",
+			IDMark_Check = "_check",
+			IDMark_Edit = "_edit",
+			IDMark_Remove = "_remove",
+			IDMark_Ul = "_ul",
+			IDMark_A = "_a";
+		loading = layer.load();	
+		$.ajax({
+			url:'${base}productionLine/loadProductionLine',
+			type: 'get',
+			success:function(result){
+				layer.close(loading);
+				if (result.success) {
+					for (var i = 0; i < result.data.length; i++) {
+						var d = result.data[i];
+						zNodes.push({
+				    		id: d.id,
+				    		pId: d.parentId,
+				    		name: d.name
+				    	})
+					}
+					$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+
+					var zTree = $.fn.zTree.getZTreeObj("treeDemo");
+					zTree.expandAll(true);
+				}
+			}
+		});
+		
+		function onClick(event, treeId, treeNode, clickFlag) {
+			loading = layer.load();	
+			$.ajax({
+				url:'${base}productionLine/findProductionLineById?id=' + treeNode.id ,
+				type: 'get',
+				success:function(result){
+					layer.close(loading);
+					if (result.success) {
+						if (productionDetailData) {
+							var productionLineDetailTpl = productionDetailData.innerHTML,//数据模板
+								productionLineDetailView = document.getElementById('productionDetail-view');//数据视图容器
+							laytpl(productionLineDetailTpl).render(result.productionLine, function(html){
+								productionLineDetailView.innerHTML = html;
+							});
+						}
+					}
+				}
+			});
+		}	
+		
+		function addDiyDom(treeId, treeNode){
+			var aObj = $("#" + treeNode.tId + IDMark_A);
+			var editStr = '<a href="javascript: void(0)" onclick = "goProductionLineForm(this)" parent-id="' + treeNode.id + '" parent-name="' + treeNode.name + '" style="margin:0 0 0 5px;" alt="添加子线" title="添加子线"><i class="fa fa-plus"></i></a>' +
+						'<a href="javascript: goPage(\'form?id=' + treeNode.id + '\')" style="margin:0 0 0 5px;" alt="编辑" title="编辑"><i class="fa fa-pencil"></i></a>' +
+						'<a href="javascript: remove(\'' + treeNode.id + '\',\'productionLine\')" style="margin:0 0 0 5px;" alt="删除" title="删除"><i class="fa fa-trash"></i></a>';
+			aObj.append(editStr);
+		}
+		
+		function goProductionLineForm(self) {
+			goPage('form', {
+				parentId: $(self).attr('parent-id'),
+				parentName: $(self).attr('parent-name'),
+			})
+		}
+		
+	</SCRIPT>

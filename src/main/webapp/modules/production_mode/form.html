@@ -1,0 +1,158 @@
+<style>
+	.inline{
+		display:inline-block!important;
+		margin-right:15px;
+	}
+</style>
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>生产模式-
+                    <#if userinfo??>
+                    	编辑
+                    <#else>
+                    	添加
+                    </#if>
+                    </h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+               		 <form method="get" class="form-horizontal" id="productionModeForm">
+               		 	<input type="hidden" name="id">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">生产线</label>
+                            <div class="col-sm-10">
+								<input type="hidden" name="productionLine">
+								<input class="form-control" type="text" name="productionLineName" value="" readonly onclick="choseAProductionLine(this, 'ppFormProductionLine', 'productionModeForm')">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">模式名称</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="productionModeName">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">模式类型</label>
+                            <div class="col-sm-10">
+								<div class="col-sm-10">
+                            	<#if productionMode??>
+                                     <label class="radio i-checks inline">
+                                         <input type="radio" value="1" name="modeType"
+                                         <#if productionMode.modeType == 1>
+                                          	checked=''
+                                          </#if>
+                                         > <i></i> 打印
+                                     </label>
+                                     <label class="radio i-checks inline">
+                                         <input type="radio"  value="2" name="modeType"
+                                          <#if productionMode.modeType == 2>
+                                          	checked=''
+                                          </#if>
+                                         > <i></i> 校验
+                                     </label>
+                                <#else>
+                                	<label class="radio i-checks inline">
+                                         <input type="radio" checked="" value="1" name="modeType" checked=''> <i></i> 打印
+                                     </label>
+                                     <label class="radio i-checks inline">
+                                         <input type="radio"  value="2" name="modeType"> <i></i> 校验
+                                     </label>
+                            	</#if>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">备注</label>
+                            <div class="col-sm-10">
+								<textarea class="form-control" type="text" name="remark"></textarea>
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存内容</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	<#if productionMode??>
+	$('#productionModeForm input[name="id"]').val('${productionMode.id!""}');
+	$('#productionModeForm input[name="productionModeName"]').val('${productionMode.productionModeName!""}');
+	$('#productionModeForm textarea[name="remark"]').html('${productionMode.remark!""}');
+	var productionLine = {
+			id:'${productionMode.productionLine.id}',
+			lineNumber:'${productionMode.productionLine.lineNumber}',
+			name:'${productionMode.productionLine.name}'
+		};
+	$('#productionModeForm input[name="productionLine"]').val(JSON.stringify(productionLine));
+	$('#productionModeForm input[name="productionLineName"]').val(productionLine.name);
+	$('#productionModeForm input[name="productionLineName"]').attr('data-id',productionLine.id);
+	</#if>
+	$('.i-checks').iCheck({
+	    checkboxClass: 'icheckbox_square-green',
+	    radioClass: 'iradio_square-green',
+	});
+	$("#productionModeForm").validate({
+        rules: {
+        	productionLineName: {
+                required: true
+            },
+            productionModeName: {
+            	required: true,
+                rangelength: [2,20]
+            },
+            modeType: {
+                required: true
+            }
+        },
+        messages: {
+        	productionLineName: {
+                required: icon + "请选择一条生产线"
+            },
+            productionModeName: {
+            	required: icon + "请输入模式名称",
+                rangelength: icon + "模式名称的输入长度必须介于2和20之间"
+            },
+            modeType: {
+                required: icon + "请选择模式类型"
+            }
+        },
+        submitHandler:function(form){
+        	var submitObj = $('#productionModeForm').serializeObject(),
+	        	data={};
+        	
+        	submitObj.productionLine = JSON.parse(submitObj.productionLine);
+        	data = {
+	                jsonStr: JSON.stringify(submitObj)
+	        };
+	    	save(data, 'productionMode');
+        } 
+	});
+	/* $.validator.addMethod("phone",function(value,element,params){  
+        var phone = /^1[34578]\d{9}$/;  
+        return this.optional(element)||(phone.test(value));  
+    },"*密码格式错误"); */
+	
+	/*$('#productionModeForm input[name = "modeType"]').on('ifChecked',function(event){
+		var value = event.currentTarget.value;
+		
+		$('#productionModeForm input[name = "productionModeDevices"]').val('');
+		$('#productionModeForm div[name = "productionModeDevicesMsg"]').html('');
+	})*/
+</script>

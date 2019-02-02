@@ -1,0 +1,474 @@
+<style>
+	.machine-mode-chosen {
+		position: relative;
+	}
+	.machine-mode-chosen i {
+		font-size:18px;
+		color: #000;
+	}
+</style>
+<div class="wrapper-content">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>二维码生成规则-<#if codingRule??>修改<#else>添加</#if></h5>
+                    <div class="ibox-tools">
+                        <a class="btn btn-white btn-bitbucket btn-xs" href="javascript: goPage('index')">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+               		 <form method="get" class="form-horizontal" id="codeRuleForm">
+               		 	<input type="hidden" name="id" value="">
+               		 	<input type="hidden" name="codeOrId" value="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">名称</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="text" name="name" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">随机长度</label>
+                            <div class="col-sm-10">
+								<input class="form-control" type="number" name="randomLength" value="">
+                            </div>
+                        </div>
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">规则表达式</label>
+                            <div class="col-sm-10">
+								<div class="row">
+			                        <div class="col-sm-3" style="padding-top:7px;">
+			                        	 <a class="text-primary" href="javascript: editRule()">
+						                    <i class="fa fa-plus"></i>&nbsp;添加
+						                </a>
+			                        </div>
+			                    </div>
+			                    <div class="table-responsive">
+			                        <table class="table table-striped hide" id="expressionConditionTable">
+			                            <thead>
+			                            <tr>
+			                                <th>下标</th>
+			                                <th>商业编码</th>
+			                                <th>编译模式</th>
+			                                <th>长度</th>
+			                                <th>操作</th>
+			                            </tr>
+			                            </thead>
+			                            <tbody>
+			                           
+			                            </tbody>
+			                        </table>
+			                    </div>
+			                    <span id="expressionCondition-error" class="help-block m-b-none"></span>
+                            </div>
+                        </div>
+	                    
+                        <div class="hr-line-dashed"></div>
+                        <div class="form-group">
+                            <div class="col-sm-4 col-sm-offset-2">
+                                <button class="btn btn-primary" type="submit">保存内容</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="hide" id="expressionConditionFormHTML" >
+	<input type="hidden" name="trIndex" value="">
+	<input type="hidden" name="id" value="">
+	<div class="form-group m-b">
+		<label class="col-sm-2 control-label">下标</label>
+		<div class="col-sm-10">
+			<input class="form-control" type="text" name="index" value="">
+		</div>
+	</div>
+	<div class="form-group m-b">
+		<label class="col-sm-2 control-label">商业编码</label>
+		<div class="col-sm-10">
+			<script id="businessCodeDatas" type="text/html">
+		 		{{# if(d.length > 0) { }}
+				{{# layui.each(d, function(index, item){  }}
+				<option value="{{item.businessCode}}">{{item.businessName}}</option>
+				{{# }) }}
+				{{# } }}
+			</script>
+			<select class="form-control" name="businessCode" id="businessCode-view">
+				
+			</select>
+		</div>
+	</div>
+
+	<div class="form-group m-b">
+		<label class="col-sm-2 control-label">编译模式</label>
+		<div class="col-sm-10 machine-mode-chosen">
+			<input type="hidden" name="matchingModes" value="">
+			<input class="form-control" type="text" name="matchingModesText" value="" readonly>
+			<ul class="tag-list" style="padding: 0">
+			</ul>
+			
+			<ul class="tag-list" style="padding: 0">
+				<li><a href="javascript:refreshMachineModeTags()"><i class="fa fa-refresh"></i></a></li>
+				<li><a href="javascript:delTailMachineModes()"><i class="fa fa-times"></i></a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="form-group m-b">
+		<label class="col-sm-2 control-label">长度</label>
+		<div class="col-sm-10">
+			<input class="form-control" type="number" name="length" value="">
+		</div>
+	</div>
+</div>
+<script>
+	<#if codingRule??>
+	$('#codeRuleForm input[name="id"]').val('${codingRule.id!""}');
+	$('#codeRuleForm input[name="codeOrId"]').val('${codingRule.codeOrId!""}');
+	$('#codeRuleForm input[name="name"]').val('${codingRule.name!""}');
+	$('#codeRuleForm input[name="randomLength"]').val('${codingRule.randomLength!""}');
+	</#if>
+	//二维码正则数组
+	var crLst = [
+			{name:'大写',value:'UPPERCASE'},
+			{name:'小写',value:'LOWERCASE'},
+			{name:'数字',value:'NUMBERS'},
+			{name:'下划线',value:'UNDERLINE'},
+			{name:'中横线',value:'HYPHEN'}
+		],
+		bcTpl = businessCodeDatas.innerHTML,//数据模板
+		bcView = document.getElementById('businessCode-view');//数据视图容器
+
+
+	loading = layer.load();	
+	$.ajax({
+		url: basePath + 'businessCode/loadBusinessCode',
+		type: 'get',
+		success:function(result){
+			layer.close(loading);
+			if (result.success) {
+				laytpl(bcTpl).render(result.data, function(bcHtml){
+					bcView.innerHTML = bcHtml;
+				});
+			}
+		}
+	});
+	$("#codeRuleForm").validate({
+	    rules: {
+	        name: {
+	            required: true,
+	            rangelength: [1,20]
+	        },
+	        randomLength: {
+	            required: true,
+	            range: [1,100]
+	        }
+	    },
+	    messages: {
+	    	name: {
+	            required: icon + "请输入名称",
+	            rangelength: icon + "名称输入长度必须介于1和20之间"
+	        },
+	        randomLength: {
+	            required: icon + "请输入随机长度",
+	            range: icon + "随机长度值必须介于1和100之间"
+	        }
+	    },
+	    submitHandler:function(form){
+	    	if ($('#expressionConditionTable tbody tr').length == 0) {
+	    		addExpressionConditionError();
+	    		return false;
+	    	}
+	    	var submitObj = $("#codeRuleForm").serializeObject(),
+	    		operDirect = 'createRule';
+	    	
+	    	submitObj.conditions = JSON.stringify(getExpressionConditions());
+	    	if (submitObj.codeOrId.trim().length > 0){
+	    		operDirect = 'updateRule'
+	    	}
+	    	loading = layer.load();
+	    	$.ajax({
+	        	url: basePath + 'codingCenter/' + operDirect,
+	        	data: submitObj,
+	        	type: "post",
+	        	success:function(data){
+	        		layer.close(loading);
+	        		if (!data.success){
+	        			layer.msg(data.message ? data.message : '保存失败！', {icon: 5});
+	        		} else {
+	        			layer.msg('保存成功！', {icon: 6});
+	        			goPage('index');
+	        		}
+	        	}
+	        });
+	    	
+	    } 
+	});
+	//添加错误信息
+	function addExpressionConditionError(){
+		$('#expressionCondition-error').parent().parent('.form-group').addClass('has-error');
+		$('#expressionCondition-error').css('display', 'block');
+		$('#expressionCondition-error').html(icon + '请创建至少一条规则');
+	}
+
+
+	function removeExpressionConditionError(){
+		$('#expressionCondition-error').parent().parent('.form-group').removeClass('has-error');
+		$('#expressionCondition-error').css('display', 'none');
+		$('#expressionCondition-error').html('');
+	}
+
+	function getExpressionConditions(){
+		var i = 0,
+			conEls = $('#expressionConditionTable tbody tr'),
+			objArr = [],
+			obj = {};
+		
+		for(i = 0; i < conEls.length; i++) {
+			obj = {
+				index: $(conEls[i]).find('td[name="index"]').attr('value'),
+				businessCode: $(conEls[i]).find('td[name="businessCode"]').attr('value'),
+				matchingModes: $(conEls[i]).find('td[name="matchingModes"]').attr('value'),
+				length: $(conEls[i]).find('td[name="length"]').attr('value')
+			};
+			objArr.push(obj);
+		}
+		return objArr;
+	}
+
+	//根据下标编辑二维码生成规则
+	function editRule(index) {
+		var indexEl = null,
+			obj = null;
+
+		if (index) {//如果下标存在，则将编辑对象赋值给obj
+			indexEl = $('#expressionConditionTable tr[index="' + index + '"]');
+			obj = {};
+			obj.trIndex = index;
+			obj.id = indexEl.attr('data-id');
+			obj.index = $(indexEl.find('td[name="index"]')).attr('value');
+			obj.businessCode = $(indexEl.find('td[name="businessCode"]')).attr('value');
+			obj.matchingModes = $(indexEl.find('td[name="matchingModes"]')).attr('value');
+			obj.matchingModesText = $(indexEl.find('td[name="matchingModes"]')).html();
+			obj.length = $(indexEl.find('td[name="length"]')).attr('value');
+		}
+		//form的id只能实时生成，单页面应用需要保证id的唯一性。
+		layer.open({
+			type : 1,
+			title : '规则信息-' + (obj ? '修改' : '添加'),
+			skin : 'layui-layer-rim', //加上边框
+			area : [ '60%', '400px' ], //宽高
+			content : '<form method="get" class="form-horizontal wrapper-content" id="expressionConditionForm">' + $('#expressionConditionFormHTML').html() + '</form>',
+			btn : [ '保存', '取消' ],
+			yes : function(lindex, layero) {
+				var r = $("#expressionConditionForm").valid(),
+					obj = $("#expressionConditionForm").serializeObject();
+					i = 0;
+					
+				if (r) {
+					//在此时获取用户选中的businessCode文本	
+					obj.businessCodeText = $('#expressionConditionForm select[name = "businessCode"]').find("option:selected").text();
+					//用户在页面上编辑了规则之后，要静态的将页面刷新
+					loadExpressionCondition(obj);
+					layer.close(lindex);
+				}
+
+				return false;
+			}
+		});
+		//使用layer生成了表单之后，才判断赋值
+		setTimeout(function(){
+			//给新生成的form中自定义二维码正则选择器插件赋id
+			$($('#expressionConditionForm ul.tag-list')[0]).attr('id', 'machineModeTags');
+			if(obj) {
+				$('#expressionConditionForm input[name = "trIndex"]').val(obj.trIndex);
+				$('#expressionConditionForm input[name = "id"]').val(obj.id);
+				$('#expressionConditionForm input[name = "index"]').val(obj.index);
+				$('#expressionConditionForm select[name = "businessCode"]').val(obj.businessCode);
+				$('#expressionConditionForm input[name = "matchingModes"]').val(obj.matchingModes);
+				$('#expressionConditionForm input[name = "matchingModesText"]').val(obj.matchingModesText);
+				$('#expressionConditionForm input[name = "length"]').val(obj.length);
+			}
+			initMachineModeTags();
+			
+			$("#expressionConditionForm").validate({
+		        rules: {
+		            index: {
+		                required: true,
+		                rangelength:[1,10]
+		            },
+		            businessCode: {
+		                required: true
+		            },
+		            matchingModesText: {
+		                required: true,
+		            },
+		            length: {
+		                required: true,
+		                range:[1,500]
+		            }
+		        },
+		        messages: {
+		        	name: {
+		                required: icon + "请输入index",
+		                rangelength: icon + "index输入长度必须介于1和10之间",
+		            },
+		            businessCode: {
+		                required: icon + "请选择businessCode"
+		            },
+		            matchingModesText: {
+		                required: icon + "请选择machineMode"
+		            },
+		            length: {
+		                required: icon + "请输入长度",
+		                range: icon + "长度值必须介于1和500之间"
+		            }
+		        }
+			});
+			
+		});
+	}
+	//根据二维码正则对象刷新加载到列表中
+	function loadExpressionCondition(obj){
+		var loadEl = null,
+			trEls =  $('#expressionConditionTable tr'),
+			index = parseInt($(trEls[trEls.length-1]).attr('index') ? $(trEls[trEls.length-1]).attr('index') : 0) + 1,
+			html = '';
+		
+		if(obj.trIndex) {//下标存在，表示编辑,否则新增
+			loadEl = $('#expressionConditionTable tr[index="' + obj.trIndex + '"]');
+			index =  obj.trIndex;
+		}
+		html = '<td name="index" value="' + obj.index + '">' + obj.index + '</td>'+
+		        '<td name="businessCode" value="' + obj.businessCode + '">' + obj.businessCodeText + '</td>'+
+		        '<td name="matchingModes" value="' + obj.matchingModes + '">' + obj.matchingModesText + '</td>'+
+		        '<td name="length" value="' + obj.length + '">' + obj.length + '</td>'+
+		        '<td>'+
+		        '<a href="javascript: editRule(' + index + ')"><i class="fa fa-pencil">编辑</i></a>&nbsp;'+
+		        '<a href="javascript: removeRule(' + index + ')"><i class="fa fa-trash">删除</i></a>'+
+		        '</td>';
+		if(loadEl) {//编辑，将对象刷新到相应的下标行中
+			loadEl.html(html);
+		} else {//新增，插入在最后一条数据行之后
+			$('#expressionConditionTable tbody').append('<tr index="' + index + '" data-id="">' + html + ' </tr>');
+			$('#expressionConditionTable').removeClass('hide');
+			removeExpressionConditionError();
+		}
+	}
+
+
+
+	//静态删除规则
+	function removeRule(index) {
+		var indexEl = $('#expressionConditionTable tr[index="' + index + '"]');
+		
+		if (indexEl) {
+	        layer.confirm('确认删除吗', {
+	          icon: 2,
+	          btn: ['确认','取消'] //按钮
+	        }, function(cindex, layerc){
+	        	indexEl.remove();
+	        	if ($('#expressionConditionTable tbody tr').length == 0) {
+	        		$('#expressionConditionTable').addClass('hide');
+	        	}
+	        	layer.close(cindex);
+	        });
+		}
+	}
+
+	//加载所有的编译模型
+	function loadAllMachineModeTag(){
+		var i=0,
+		html = '';
+
+		for(i = 0; i < crLst.length; i++){
+			html += '<li><a href="javascript:addMachineMode(' + i + ')">' + crLst[i].name + '</a></li>';
+		}
+		$('#machineModeTags').html(html);
+	}
+
+	//根据编译模型文本值初始化模型tags
+	function initMachineModeTags(){
+		var matchingModes = $('#expressionConditionForm input[name="matchingModes"]').val(),
+			lastMode = '';
+		
+		if(matchingModes.length > 0){
+			if (matchingModes.indexOf(',') > 0) {
+				lastMode = matchingModes.substring(matchingModes.lastIndexOf(',') + 1);
+			} else {
+				lastMode = matchingModes;
+			}
+		}
+		if (lastMode.length > 0 ) {
+			for(i = 0; i < crLst.length; i++){
+				if(crLst[i].value == lastMode.toUpperCase()) {
+					dissMachineModeTag(i);
+				}
+			}
+		} else {
+			loadAllMachineModeTag();
+		}
+	}
+
+	//刷新清空编译模型
+	function refreshMachineModeTags(){
+		loadAllMachineModeTag();
+		$('#expressionConditionForm input[name="matchingModesText"]').val('');
+		$('#expressionConditionForm input[name="matchingModes"]').val('');
+	}
+
+	//根据下标diss编译模型
+	function dissMachineModeTag(index){
+		var i=0,
+			html = '';
+		
+		for(i = 0; i < crLst.length; i++){
+			if(i != index) {
+				html += '<li><a href="javascript:addMachineMode(' + i + ')">' + crLst[i].name + '</a></li>';
+			}
+		}
+		$('#machineModeTags').html(html);
+		
+	}
+
+	//根据下标添加编译模型
+	function addMachineMode(index) {
+		var matchingModesText = $('#expressionConditionForm input[name="matchingModesText"]').val(),
+			matchingModes = $('#expressionConditionForm input[name="matchingModes"]').val();
+
+		matchingModesText = (matchingModesText ? (matchingModesText + ',') : '') + crLst[index].name;
+		matchingModes = (matchingModes ? (matchingModes + ',') : '') + crLst[index].value.toLowerCase();
+
+		$('#expressionConditionForm input[name="matchingModesText"]').val(matchingModesText);
+		$('#expressionConditionForm input[name="matchingModes"]').val(matchingModes);
+		
+		dissMachineModeTag(index);
+		
+	}
+
+	//删除最后一个编译模型
+	function delTailMachineModes(){
+		var i = 0,
+			matchingModesText = $('#expressionConditionForm input[name="matchingModesText"]').val(),
+			matchingModes = $('#expressionConditionForm input[name="matchingModes"]').val(),
+			lastMode = '';
+		
+		if (matchingModesText.indexOf(',') > 0) {
+			matchingModes = matchingModes.substring(0, matchingModes.lastIndexOf(','));
+			matchingModesText = matchingModesText.substring(0, matchingModesText.lastIndexOf(','));
+		} else {
+			matchingModes = '';
+			matchingModesText = '';
+		}
+
+		$('#expressionConditionForm input[name="matchingModesText"]').val(matchingModesText);
+		$('#expressionConditionForm input[name="matchingModes"]').val(matchingModes);
+		
+		initMachineModeTags();
+		
+	}
+</script>
